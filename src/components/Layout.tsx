@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import utenteLoggatoService from '../services/UtenteLoggatoService';
 import Footer from './Footer';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { toast } from 'react-toastify';
 
 export default function Layout({ children }: any) {
+    const dispatch = useDispatch();
     const location = useLocation();
 
     const utenteLoggato = useSelector((state: any) => state.utenteLoggato);
@@ -23,9 +24,9 @@ export default function Layout({ children }: any) {
 
     const verificaAutenticazione = async () => {
 
-        await utenteLoggatoService.verificaAutenticazione(utenteLoggato.token).then(() => {
+        await utenteLoggatoService.verificaAutenticazione(utenteLoggato.token).then(response => {
         }
-        ).catch((e: any) => {
+        ).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -84,7 +85,7 @@ export default function Layout({ children }: any) {
             verificaAutorizzazione();
             setEseguitoControlloAutenticazione(true);
 
-        } else if (utenteLoggato.token === undefined) {
+        }else if(utenteLoggato.token===undefined){
             navigate("/login");
         }
     });
@@ -104,11 +105,11 @@ export default function Layout({ children }: any) {
                     <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
                         data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
 
-                        <Sidebar />
+                        {<Sidebar />}
                         <main className="main-content position-relative border-radius-lg pt-3">
                             <Header></Header>
 
-                            <div className="container-fluid py-4">
+                            <div className="container-fluid px-1">
 
 
                                 {feedback.isLoading && <div className="text-center">

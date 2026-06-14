@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
@@ -20,7 +20,7 @@ export default function ListaVociMenuPage() {
 
         if (pagina !== 0) {
 
-            await vociMenuService.getVociMenu(utenteLoggato.token, pagina).then((response: any) => {
+            await vociMenuService.getVociMenu(utenteLoggato.token, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setMenu(response.data);
@@ -33,7 +33,7 @@ export default function ListaVociMenuPage() {
                     });
                 }
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -56,7 +56,7 @@ export default function ListaVociMenuPage() {
     }
 
     const eliminaVoceMenu = async () => {
-        await vociMenuService.eliminaVoceMenu(utenteLoggato.token, voceMenuDaEliminare.idVoceMenu).then((response: any) => {
+        await vociMenuService.eliminaVoceMenu(utenteLoggato.token, voceMenuDaEliminare.idVoceMenu).then(response => {
             console.info(response.data);
             toast.success("La voce di menu è stata eliminata con successo!", {
                 position: "top-center",
@@ -66,7 +66,7 @@ export default function ListaVociMenuPage() {
             getVociMenu(paginaMenu);
 
 
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -98,14 +98,14 @@ export default function ListaVociMenuPage() {
     return (
         <Layout>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">
                             <i className="fa-solid fa-list-ul text-primary fa-1x pe-2 "></i>
                             Lista voci di menu
                         </h3>
-                        <Link to="/scheda-voce-menu" className='btn btn-primary'><i className="fa-solid fa-plus pe-2"></i>Inserisci voce</Link>
+                        <Link to="/pannello-di-controllo/scheda-voce-menu" className='btn btn-primary'><i className="fa-solid fa-plus pe-2"></i>Inserisci voce</Link>
 
                     </div>
                 </div>
@@ -132,7 +132,7 @@ export default function ListaVociMenuPage() {
                                                     <th className='text-center' scope="row">{voce.idVoceMenu}</th>
                                                     <td><small>{voce.descrizionePadre}</small><span className='d-block ps-3 text-bold'>{voce.descrizione}</span></td>
                                                     <td><i className={voce.icona + " pe-3 text-primary"}></i>{voce.icona}</td>
-                                                    <td className='text-center'><Link to={"/scheda-voce-menu/" + voce.idVoceMenu} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
+                                                    <td className='text-center'><Link to={"/pannello-di-controllo/scheda-voce-menu/" + voce.idVoceMenu} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
                                                     <td className='text-center'><span onClick={() => setVoceMenuDaEliminare(voce)} data-bs-toggle="modal" data-bs-target="#eliminaVoceMenu" className='btn btn-danger'><i className="fa-solid fa-trash-can"></i></span></td>
                                                 </tr>
                                             )}

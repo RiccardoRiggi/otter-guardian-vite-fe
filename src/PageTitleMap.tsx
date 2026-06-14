@@ -3,45 +3,47 @@ export default function PageTitleMap(pathName: any) {
 
   if ("/" === pathName) {
     return "Homepage"
-  } else if ("/impostazioni" === pathName) {
+  } else if ("/pannello-di-controllo" === pathName) {
+    return "Pannello di controllo"
+  } else if ("/pannello-di-controllo/impostazioni" === pathName) {
     return "Impostazioni utente"
-  } else if ("/logs/error" === pathName) {
+  } else if ("/pannello-di-controllo/logs/error" === pathName) {
     return "Log livello error"
-  } else if ("/logs/warn" === pathName) {
+  } else if ("/pannello-di-controllo/logs/warn" === pathName) {
     return "Log livello warn"
-  } else if ("/logs/info" === pathName) {
+  } else if ("/pannello-di-controllo/logs/info" === pathName) {
     return "Log livello info"
-  } else if ("/logs/debug" === pathName) {
+  } else if ("/pannello-di-controllo/logs/debug" === pathName) {
     return "Log livello debug"
-  } else if ("/logs" === pathName) {
+  } else if ("/pannello-di-controllo/logs" === pathName) {
     return "Log"
-  } else if ("/lista-menu" === pathName) {
+  } else if ("/pannello-di-controllo/lista-menu" === pathName) {
     return "Lista voci di menu"
-  } else if ("/lista-notifiche-utente" === pathName) {
+  } else if ("/pannello-di-controllo/lista-notifiche-utente" === pathName) {
     return "Lista notifiche"
-  } else if ("/scheda-utente" === pathName || pathName.includes("scheda-utente")) {
+  } else if ("/pannello-di-controllo/scheda-utente" === pathName || pathName.includes("scheda-utente")) {
     return "Scheda utente"
-  } else if ("/lista-utenti" === pathName) {
+  } else if ("/pannello-di-controllo/lista-utenti" === pathName) {
     return "Lista utenti"
-  } else if ("/lista-ruoli" === pathName) {
+  } else if ("/pannello-di-controllo/lista-ruoli" === pathName) {
     return "Lista ruoli"
-  } else if ("/scheda-ruolo" === pathName || pathName.includes("scheda-ruolo")) {
+  } else if ("/pannello-di-controllo/scheda-ruolo" === pathName || pathName.includes("scheda-ruolo")) {
     return "Scheda ruolo"
-  } else if ("/lista-risorse" === pathName) {
+  } else if ("/pannello-di-controllo/lista-risorse" === pathName) {
     return "Lista risorse"
   } else if (pathName.includes("scheda-risorsa")) {
     return "Scheda risorsa"
-  } else if ("/lista-indirizzi-ip" === pathName) {
+  } else if ("/pannello-di-controllo/lista-indirizzi-ip" === pathName) {
     return "Lista indirizzi IP"
-  } else if ("/lista-dispositivi-fisici" === pathName) {
+  } else if ("/pannello-di-controllo/lista-dispositivi-fisici" === pathName) {
     return "Lista dispositivi fisici"
   } else if (pathName.includes("scheda-voce-menu")) {
     return "Scheda voce menu"
   } else if (pathName.includes("scheda-notifica")) {
     return "Scheda notifica"
-  } else if ("/lista-notifiche" === pathName) {
+  } else if ("/pannello-di-controllo/lista-notifiche" === pathName) {
     return "Lista notifiche"
-  } else if ("/lista-accessi" === pathName) {
+  } else if ("/pannello-di-controllo/lista-accessi" === pathName) {
     return "Lista accessi"
   } else {
     return "";

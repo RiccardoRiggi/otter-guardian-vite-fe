@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
@@ -21,7 +21,7 @@ export default function ListaRisorsePage() {
 
         if (pagina !== 0) {
 
-            await risorseService.getRisorse(utenteLoggato.token, pagina).then((response: any) => {
+            await risorseService.getRisorse(utenteLoggato.token, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setRisorse(response.data);
@@ -35,7 +35,7 @@ export default function ListaRisorsePage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -58,7 +58,7 @@ export default function ListaRisorsePage() {
     }
 
     const eliminaRisorsa = async () => {
-        await risorseService.eliminaRisorsa(utenteLoggato.token, risorsaDaEliminare.idRisorsa).then(() => {
+        await risorseService.eliminaRisorsa(utenteLoggato.token, risorsaDaEliminare.idRisorsa).then(response => {
             toast.success("La risorsa è stata eliminata con successo!", {
                 position: "top-center",
                 autoClose: 5000,
@@ -67,7 +67,7 @@ export default function ListaRisorsePage() {
             getRisorse(paginaRisorse);
 
 
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -98,14 +98,14 @@ export default function ListaRisorsePage() {
     return (
         <Layout>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">
                             <i className="fa-solid fa-sitemap text-primary fa-1x pe-2 "></i>
                             Lista risorse
                         </h3>
-                        <Link to="/scheda-risorsa" className='btn btn-primary'><i className="fa-solid fa-plus pe-2"></i>Inserisci risorsa</Link>
+                        <Link to="/pannello-di-controllo/scheda-risorsa" className='btn btn-primary'><i className="fa-solid fa-plus pe-2"></i>Inserisci risorsa</Link>
 
                     </div>
                 </div>
@@ -132,7 +132,7 @@ export default function ListaRisorsePage() {
                                                     <th scope="row">{voce.idRisorsa}</th>
                                                     <td>{voce.nomeMetodo}</td>
                                                     <td>{voce.descrizione}</td>
-                                                    <td className='text-center'><Link to={"/scheda-risorsa/" + voce.idRisorsa} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
+                                                    <td className='text-center'><Link to={"/pannello-di-controllo/scheda-risorsa/" + voce.idRisorsa} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
                                                     <td className='text-center'><span onClick={() => setRisorsaDaEliminare(voce)} data-bs-toggle="modal" data-bs-target="#eliminaRisorsa" className='btn btn-danger'><i className="fa-solid fa-trash-can"></i></span></td>
                                                 </tr>
                                             )}

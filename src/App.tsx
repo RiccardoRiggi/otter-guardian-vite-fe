@@ -22,6 +22,7 @@ import ListaRuoliPage from './pages/ruoli/ListaRuoliPage'
 import SchedaRuoloPage from './pages/ruoli/SchedaRuoloPage'
 import ListaUtentiPage from './pages/utenti/ListaUtentiPage'
 import SchedaUtentePage from './pages/utenti/SchedaUtentePage'
+import PannelloDiControlloPage from './pages/PannelloDiControlloPage'
 
 function App() {
 
@@ -37,10 +38,10 @@ function App() {
 
 
         <Route
-          path=""
+          path="/pannello-di-controllo"
           element={
             <PrivateRoute>
-              <HomePage />
+              <PannelloDiControlloPage />
             </PrivateRoute>
           }
         />
@@ -55,7 +56,7 @@ function App() {
         />
 
         <Route
-          path="/logs/:livelloLog"
+          path="/pannello-di-controllo/logs/:livelloLog"
           element={
             <PrivateRoute>
               <LogsPage />
@@ -64,7 +65,7 @@ function App() {
         />
 
         <Route
-          path="/logs"
+          path="/pannello-di-controllo/logs"
           element={
             <PrivateRoute>
               <LogsPage />
@@ -73,7 +74,7 @@ function App() {
         />
 
         <Route
-          path="/lista-menu"
+          path="/pannello-di-controllo/lista-menu"
           element={
             <PrivateRoute>
               <ListaVociMenuPage />
@@ -82,7 +83,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-voce-menu"
+          path="/pannello-di-controllo/scheda-voce-menu"
           element={
             <PrivateRoute>
               <SchedaVoceMenuPage />
@@ -91,7 +92,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-voce-menu/:idVoceMenu"
+          path="/pannello-di-controllo/scheda-voce-menu/:idVoceMenu"
           element={
             <PrivateRoute>
               <SchedaVoceMenuPage />
@@ -100,7 +101,7 @@ function App() {
         />
 
         <Route
-          path="/lista-risorse"
+          path="/pannello-di-controllo/lista-risorse"
           element={
             <PrivateRoute>
               <ListaRisorsePage />
@@ -109,7 +110,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-risorsa"
+          path="/pannello-di-controllo/scheda-risorsa"
           element={
             <PrivateRoute>
               <SchedaRisorsaPage />
@@ -118,7 +119,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-risorsa/:idRisorsa"
+          path="/pannello-di-controllo/scheda-risorsa/:idRisorsa"
           element={
             <PrivateRoute>
               <SchedaRisorsaPage />
@@ -127,7 +128,7 @@ function App() {
         />
 
         <Route
-          path="/lista-ruoli"
+          path="/pannello-di-controllo/lista-ruoli"
           element={
             <PrivateRoute>
               <ListaRuoliPage />
@@ -136,7 +137,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-ruolo"
+          path="/pannello-di-controllo/scheda-ruolo"
           element={
             <PrivateRoute>
               <SchedaRuoloPage />
@@ -145,7 +146,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-ruolo/:idTipoRuolo"
+          path="/pannello-di-controllo/scheda-ruolo/:idTipoRuolo"
           element={
             <PrivateRoute>
               <SchedaRuoloPage />
@@ -154,7 +155,7 @@ function App() {
         />
 
         <Route
-          path="/lista-utenti"
+          path="/pannello-di-controllo/lista-utenti"
           element={
             <PrivateRoute>
               <ListaUtentiPage />
@@ -163,7 +164,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-utente"
+          path="/pannello-di-controllo/scheda-utente"
           element={
             <PrivateRoute>
               <SchedaUtentePage />
@@ -172,7 +173,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-utente/:idUtente"
+          path="/pannello-di-controllo/scheda-utente/:idUtente"
           element={
             <PrivateRoute>
               <SchedaUtentePage />
@@ -181,7 +182,7 @@ function App() {
         />
 
         <Route
-          path="/lista-indirizzi-ip"
+          path="/pannello-di-controllo/lista-indirizzi-ip"
           element={
             <PrivateRoute>
               <ListaIndirizziIp />
@@ -190,7 +191,7 @@ function App() {
         />
 
         <Route
-          path="/lista-dispositivi-fisici"
+          path="/pannello-di-controllo/lista-dispositivi-fisici"
           element={
             <PrivateRoute>
               <ListaDispositiviFisiciPage />
@@ -199,7 +200,7 @@ function App() {
         />
 
         <Route
-          path="/lista-account-telegram"
+          path="/pannello-di-controllo/lista-account-telegram"
           element={
             <PrivateRoute>
               <ListaAccountTelegramPage />
@@ -208,7 +209,7 @@ function App() {
         />
 
         <Route
-          path="/lista-accessi"
+          path="/pannello-di-controllo/lista-accessi"
           element={
             <PrivateRoute>
               <ListaAccessiPage />
@@ -217,7 +218,7 @@ function App() {
         />
 
         <Route
-          path="/lista-notifiche-utente"
+          path="/pannello-di-controllo/lista-notifiche-utente"
           element={
             <PrivateRoute>
               <ListaNotificheUtentePage />
@@ -226,7 +227,7 @@ function App() {
         />
 
         <Route
-          path="/lista-notifiche"
+          path="/pannello-di-controllo/lista-notifiche"
           element={
             <PrivateRoute>
               <ListaNotifichePage />
@@ -235,7 +236,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-notifica"
+          path="/pannello-di-controllo/scheda-notifica"
           element={
             <PrivateRoute>
               <SchedaNotificaPage />
@@ -244,7 +245,7 @@ function App() {
         />
 
         <Route
-          path="/scheda-notifica/:idNotifica"
+          path="/pannello-di-controllo/scheda-notifica/:idNotifica"
           element={
             <PrivateRoute>
               <SchedaNotificaPage />

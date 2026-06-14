@@ -21,7 +21,7 @@ export default function Footer() {
                                 <li className="nav-item">
                                     <a href="https://www.linkedin.com/in/riccardoriggi/" className="nav-link text-muted" target="_blank"><i className="fa-brands fa-linkedin pe-1"></i>LinkedIn</a>
                                 </li>
-
+                               
                             </ul>
                         </div>
                     </div>

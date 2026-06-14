@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 import Layout from '../../components/Layout';
-//@ts-ignore
+// @ts-ignore
 import { fetchIsLoadingAction } from '../../modules/feedback/actions';
 import risorseService from '../../services/RisorseService';
 import SchedaRisorsaValidator from '../../validators/SchedaRisorsaValidator';
@@ -27,12 +27,12 @@ export default function SchedaRisorsaPage() {
 
     const getRisorsa = async () => {
         dispatch(fetchIsLoadingAction(true));
-        await risorseService.getRisorsa(utenteLoggato.token, params.idRisorsa).then((response: any) => {
+        await risorseService.getRisorsa(utenteLoggato.token, params.idRisorsa).then(response => {
             setIdRisorsa(response.data.idRisorsa);
             setNomeMetodo(response.data.nomeMetodo);
             setDescrizione(response.data.descrizione);
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             dispatch(fetchIsLoadingAction(false));
             //---------------------------------------------
             try {
@@ -69,14 +69,14 @@ export default function SchedaRisorsaPage() {
 
             if (params.idRisorsa === undefined) {
                 dispatch(fetchIsLoadingAction(true));
-                await risorseService.inserisciRisorsa(utenteLoggato.token, jsonBody).then(() => {
+                await risorseService.inserisciRisorsa(utenteLoggato.token, jsonBody).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Risorsa inserita con successo!", {
                         position: "top-center",
                         autoClose: 5000,
                     });
-                    navigate("/scheda-risorsa/" + idRisorsa);
-                }).catch((e: any) => {
+                    navigate("/pannello-di-controllo/scheda-risorsa/" + idRisorsa);
+                }).catch(e => {
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
                     try {
@@ -98,13 +98,13 @@ export default function SchedaRisorsaPage() {
                 });
             } else {
                 dispatch(fetchIsLoadingAction(true));
-                await risorseService.modificaRisorsa(utenteLoggato.token, jsonBody, params.idRisorsa).then(() => {
+                await risorseService.modificaRisorsa(utenteLoggato.token, jsonBody, params.idRisorsa).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Risorsa aggiornata con successo!", {
                         position: "top-center",
                         autoClose: 5000,
                     });
-                }).catch((e: any) => {
+                }).catch(e => {
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
                     try {
@@ -140,7 +140,7 @@ export default function SchedaRisorsaPage() {
 
     return (
         <Layout>
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">

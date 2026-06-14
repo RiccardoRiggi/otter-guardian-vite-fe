@@ -15,6 +15,11 @@ export const utenteReducer = (state = initialState, action) => {
                 ...state,
                 token: action.token
             }
+        case 'FETCH_PRE_TOKEN':
+            return {
+                ...state,
+                preToken: action.preToken
+            }
         case 'FETCH_NOME':
             return {
                 ...state,
@@ -39,6 +44,11 @@ export const utenteReducer = (state = initialState, action) => {
             return {
                 ...state,
                 menu: action.menu
+            }
+        case 'FETCH_ID_UTENTE':
+            return {
+                ...state,
+                idUtente: action.idUtente
             }
         default:
             return state;

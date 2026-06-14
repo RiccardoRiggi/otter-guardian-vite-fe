@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 import Layout from '../../components/Layout';
@@ -26,7 +26,7 @@ export default function ListaNotificheUtentePage() {
 
     const getNotificheLatoUtente = async (pagina: any) => {
         if (pagina !== 0) {
-            await notificheService.getNotificheLatoUtente(utenteLoggato.token, pagina).then((response: any) => {
+            await notificheService.getNotificheLatoUtente(utenteLoggato.token, pagina).then(response => {
                 if (response.data.length !== 0) {
                     setListaNotifiche(response.data);
                     setPaginaNotifiche(pagina);
@@ -37,7 +37,7 @@ export default function ListaNotificheUtentePage() {
                         autoClose: 5000,
                     });
                 }
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -61,14 +61,14 @@ export default function ListaNotificheUtentePage() {
     }
 
     const eliminaNotificaLatoUtente = async () => {
-        await notificheService.eliminaNotificaLatoUtente(utenteLoggato.token, notificaDaEliminare.idNotifica).then(() => {
+        await notificheService.eliminaNotificaLatoUtente(utenteLoggato.token, notificaDaEliminare.idNotifica).then(response => {
             setNotificaDaEliminare(undefined);
             getNotificheLatoUtente(paginaNotifiche);
             toast.success("Notifica eliminata con successo", {
                 position: "top-center",
                 autoClose: 5000,
             });
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -92,7 +92,7 @@ export default function ListaNotificheUtentePage() {
 
     return (
         <Layout>
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">

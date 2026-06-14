@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
@@ -21,7 +21,7 @@ export default function ListaAccountTelegramPage() {
 
         if (pagina !== 0) {
 
-            await dispositiviFisiciService.getListaDispositiviFisiciTelegram(utenteLoggato.token, pagina).then((response: any) => {
+            await dispositiviFisiciService.getListaDispositiviFisiciTelegram(utenteLoggato.token, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setDispositivi(response.data);
@@ -34,7 +34,7 @@ export default function ListaAccountTelegramPage() {
                     });
                 }
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -57,7 +57,7 @@ export default function ListaAccountTelegramPage() {
     }
 
     const rimuoviDispositivoFisico = async () => {
-        await dispositiviFisiciService.rimuoviDispositivoFisicoTelegram(utenteLoggato.token, { idDispositivoFisico: dispositivoDaEliminare.idDispositivoFisico }).then(() => {
+        await dispositiviFisiciService.rimuoviDispositivoFisicoTelegram(utenteLoggato.token, { idDispositivoFisico: dispositivoDaEliminare.idDispositivoFisico }).then(response => {
             toast.success("Account telegram rimosso con successo!", {
                 position: "top-center",
                 autoClose: 5000,
@@ -65,7 +65,7 @@ export default function ListaAccountTelegramPage() {
             setDispositivoDaEliminare(undefined);
             getListaDispositiviFisici(paginaDispositivo);
 
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -97,7 +97,7 @@ export default function ListaAccountTelegramPage() {
     return (
         <Layout>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">

@@ -21,7 +21,7 @@ export default function ListaAccessiPage() {
 
         if (pagina !== 0) {
 
-            await gestioneAccessiService.getListaAccessi(utenteLoggato.token, pagina).then((response: any) => {
+            await gestioneAccessiService.getListaAccessi(utenteLoggato.token, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setAccessi(response.data);
@@ -34,7 +34,7 @@ export default function ListaAccessiPage() {
                     });
                 }
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -57,14 +57,14 @@ export default function ListaAccessiPage() {
     }
 
     const terminaAccesso = async () => {
-        await gestioneAccessiService.terminaAccesso(utenteLoggato.token, { token: accessoDaEliminare.token }).then(() => {
+        await gestioneAccessiService.terminaAccesso(utenteLoggato.token, { token: accessoDaEliminare.token }).then(response => {
             toast.success("Utente disconnesso con successo!", {
                 position: "top-center",
                 autoClose: 5000,
             });
             setAccessoDaEliminare(undefined);
             getListaAccessi(paginaAccesso);
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -95,7 +95,7 @@ export default function ListaAccessiPage() {
 
     return (
         <Layout>
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">

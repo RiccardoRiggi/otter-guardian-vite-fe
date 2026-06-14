@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { getData, getOra } from '../DateUtil';
-//@ts-ignore
+// @ts-ignore
 import { fetchIsLoadingAction } from '../modules/feedback/actions';
 import dispositiviFisiciService from '../services/DispositiviFisiciService';
 import utenteLoggatoService from '../services/UtenteLoggatoService';
+import { toast } from 'react-toastify';
 
 export default function ImpostazioniPage() {
 
@@ -29,9 +29,13 @@ export default function ImpostazioniPage() {
     const [idNuovoDispositivoFisico, setIdNuovoDispositivoFisico] = React.useState("");
     const [idNuovoDispositivoFisicoTelegram, setIdNuovoDispositivoFisicoTelegram] = React.useState("");
 
+    const [mostraChiaveGlobale, setMostraChiaveGlobale] = React.useState(false);
+    const [chiaveGloabale, setChiaveGlobale] = React.useState("");
 
-    const [idInterval, setIdInterval] = React.useState<number>();
-    const [idIntervalTelegram, setIdIntervalTelegram] = React.useState<number>();
+
+
+    const [idInterval, setIdInterval] = React.useState("");
+    const [idIntervalTelegram, setIdIntervalTelegram] = React.useState("");
 
 
     const [accessi, setAccessi] = React.useState([]);
@@ -55,7 +59,7 @@ export default function ImpostazioniPage() {
 
         if (pagina !== 0) {
 
-            await dispositiviFisiciService.getDispositiviFisiciTelegram(utenteLoggato.token, pagina).then((response: any) => {
+            await dispositiviFisiciService.getDispositiviFisiciTelegram(utenteLoggato.token, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setDispositiviFisiciTelegram(response.data);
@@ -68,7 +72,7 @@ export default function ImpostazioniPage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -96,7 +100,7 @@ export default function ImpostazioniPage() {
 
         if (pagina !== 0) {
 
-            await dispositiviFisiciService.getDispositiviFisici(utenteLoggato.token, pagina).then((response: any) => {
+            await dispositiviFisiciService.getDispositiviFisici(utenteLoggato.token, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setDispositiviFisici(response.data);
@@ -109,7 +113,7 @@ export default function ImpostazioniPage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -132,17 +136,56 @@ export default function ImpostazioniPage() {
         }
     }
 
+    const [idChiavePersonaleTotp, setIdChiavePersonaleTotp] = React.useState("");
+
+    const generaChiavePersonaleTOTP = async () => {
+        dispatch(fetchIsLoadingAction(true));
+
+
+        await dispositiviFisiciService.generaChiavePersonaleTOTP(utenteLoggato.token).then(response => {
+            setIdChiavePersonaleTotp(response.data);
+            toast.success("Chiave generata correttamente. Scansiona il QR Code con un'applicazione che supporta lo standard TOTP", {
+                position: "top-center",
+                autoClose: 5000,
+            });
+            dispatch(fetchIsLoadingAction(false));
+        }).catch(e => {
+            console.error(e);
+            toast.error("Errore durante la generazione della chiave personale TOTP", {
+                position: "top-center",
+                autoClose: 5000,
+            });
+            dispatch(fetchIsLoadingAction(false));
+        });
+    }
+
     const generaIdentificativoDispositivoFisico = async () => {
 
         dispatch(fetchIsLoadingAction(true));
 
 
-        await dispositiviFisiciService.generaIdentificativoDispositivoFisico(utenteLoggato.token).then((response: any) => {
+        await dispositiviFisiciService.generaIdentificativoDispositivoFisico(utenteLoggato.token).then(response => {
             console.info(response.data);
             setIdNuovoDispositivoFisico(response.data.idDispositivoFisico);
             verificaAttivazioneNuovoDispositivo(response.data.idDispositivoFisico);
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
+            console.error(e);
+            dispatch(fetchIsLoadingAction(false));
+        });
+    }
+
+    const getChiaveGlobale = async () => {
+
+        dispatch(fetchIsLoadingAction(true));
+
+
+        await utenteLoggatoService.getChiaveGlobale(utenteLoggato.token).then(response => {
+            console.info(response.data);
+            setChiaveGlobale(response.data);
+            setMostraChiaveGlobale(true);
+            dispatch(fetchIsLoadingAction(false));
+        }).catch(e => {
             console.error(e);
             dispatch(fetchIsLoadingAction(false));
         });
@@ -153,14 +196,14 @@ export default function ImpostazioniPage() {
         dispatch(fetchIsLoadingAction(true));
 
 
-        await dispositiviFisiciService.generaIdentificativoTelegram(utenteLoggato.token).then((response: any) => {
+        await dispositiviFisiciService.generaIdentificativoTelegram(utenteLoggato.token).then(response => {
             console.info(response.data);
             setIdNuovoDispositivoFisicoTelegram(response.data.idDispositivoFisico);
             setNomeBotTelegram(response.data.nomeBotTelegram);
             setCodiceAssociazione(response.data.codiceAssociazione);
             verificaAttivazioneNuovoDispositivoTelegram(response.data.idDispositivoFisico);
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             console.error(e);
             dispatch(fetchIsLoadingAction(false));
         });
@@ -169,7 +212,7 @@ export default function ImpostazioniPage() {
     const verificaAttivazioneNuovoDispositivo = (idNuovoDispositivoFisico: any) => {
         interval = setInterval(async () => {
 
-            await dispositiviFisiciService.isDispositivoAbilitato(utenteLoggato.token, idNuovoDispositivoFisico).then((response: any) => {
+            await dispositiviFisiciService.isDispositivoAbilitato(utenteLoggato.token, idNuovoDispositivoFisico).then(response => {
                 console.info(response.data);
 
                 if (response.data) {
@@ -184,7 +227,7 @@ export default function ImpostazioniPage() {
 
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -211,7 +254,7 @@ export default function ImpostazioniPage() {
     const verificaAttivazioneNuovoDispositivoTelegram = (idNuovoDispositivoFisicoTelegram: any) => {
         interval = setInterval(async () => {
 
-            await dispositiviFisiciService.isDispositivoTelegramAbilitato(utenteLoggato.token, idNuovoDispositivoFisicoTelegram).then((response: any) => {
+            await dispositiviFisiciService.isDispositivoTelegramAbilitato(utenteLoggato.token, idNuovoDispositivoFisicoTelegram).then(response => {
                 console.info(response.data);
 
                 if (response.data) {
@@ -226,7 +269,7 @@ export default function ImpostazioniPage() {
 
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -267,7 +310,7 @@ export default function ImpostazioniPage() {
 
 
         if (pagina !== 0) {
-            await utenteLoggatoService.getStoricoAccessi(utenteLoggato.token, pagina).then((response: any) => {
+            await utenteLoggatoService.getStoricoAccessi(utenteLoggato.token, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setAccessi(response.data);
@@ -280,7 +323,7 @@ export default function ImpostazioniPage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -306,9 +349,9 @@ export default function ImpostazioniPage() {
 
 
     const generaCodiciBackup = async () => {
-        await utenteLoggatoService.generaCodiciBackup(utenteLoggato.token).then((response: any) => {
+        await utenteLoggatoService.generaCodiciBackup(utenteLoggato.token).then(response => {
             setCodiciBackup(response.data);
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -335,9 +378,9 @@ export default function ImpostazioniPage() {
     }
 
     const getMetodiAutenticazionePerUtenteLoggato = async () => {
-        await utenteLoggatoService.getMetodiAutenticazionePerUtenteLoggato(utenteLoggato.token).then((response: any) => {
+        await utenteLoggatoService.getMetodiAutenticazionePerUtenteLoggato(utenteLoggato.token).then(response => {
             setListaMetodiSecondoFattore(response.data);
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -362,13 +405,13 @@ export default function ImpostazioniPage() {
 
     const cambiaAbilitazioneSecondoFattore = async (idUtente: any, idTipoMetodoLogin: any) => {
         if (idUtente === null) {
-            await utenteLoggatoService.abilitaTipoMetodoLogin(utenteLoggato.token, idTipoMetodoLogin).then(() => {
+            await utenteLoggatoService.abilitaTipoMetodoLogin(utenteLoggato.token, idTipoMetodoLogin).then(response => {
                 toast.success("Salvataggio avvenuto con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
                 getMetodiAutenticazionePerUtenteLoggato();
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -389,13 +432,13 @@ export default function ImpostazioniPage() {
 
             });
         } else {
-            await utenteLoggatoService.disabilitaTipoMetodoLogin(utenteLoggato.token, idTipoMetodoLogin).then(() => {
+            await utenteLoggatoService.disabilitaTipoMetodoLogin(utenteLoggato.token, idTipoMetodoLogin).then(response => {
                 getMetodiAutenticazionePerUtenteLoggato();
                 toast.success("Salvataggio avvenuto con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 console.error(e);
                 if (e.response.status === 401) {
                     toast.error(e.response.data.descrizione, {
@@ -409,9 +452,9 @@ export default function ImpostazioniPage() {
     }
 
     const getMetodiRecuperoPasswordPerUtenteLoggato = async () => {
-        await utenteLoggatoService.getMetodiRecuperoPasswordPerUtenteLoggato(utenteLoggato.token).then((response: any) => {
+        await utenteLoggatoService.getMetodiRecuperoPasswordPerUtenteLoggato(utenteLoggato.token).then(response => {
             setListaMetodiSecondoFattoreRecuperoPassword(response.data);
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -435,13 +478,13 @@ export default function ImpostazioniPage() {
 
     const cambiaAbilitazioneSecondoFattoreRecuperoPassword = async (idUtente: any, idTipoMetodoRecPsw: any) => {
         if (idUtente === null) {
-            await utenteLoggatoService.abilitaTipoRecuperoPassword(utenteLoggato.token, idTipoMetodoRecPsw).then(() => {
+            await utenteLoggatoService.abilitaTipoRecuperoPassword(utenteLoggato.token, idTipoMetodoRecPsw).then(response => {
                 toast.success("Salvataggio avvenuto con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
                 getMetodiRecuperoPasswordPerUtenteLoggato();
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -462,13 +505,13 @@ export default function ImpostazioniPage() {
 
             });
         } else {
-            await utenteLoggatoService.disabilitaTipoRecuperoPassword(utenteLoggato.token, idTipoMetodoRecPsw).then(() => {
+            await utenteLoggatoService.disabilitaTipoRecuperoPassword(utenteLoggato.token, idTipoMetodoRecPsw).then(response => {
                 getMetodiRecuperoPasswordPerUtenteLoggato();
                 toast.success("Salvataggio avvenuto con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -508,7 +551,7 @@ export default function ImpostazioniPage() {
 
     return (
         <Layout>
-            <div className="card shadow-lg mx-4 ">
+            <div className="card shadow-lg mx-1 ">
                 <div className="card-body p-3">
                     <div className="row gx-4">
                         <div className="col-auto">
@@ -533,7 +576,7 @@ export default function ImpostazioniPage() {
                 </div>
             </div>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center">
                         <h3 className="mb-1">
@@ -562,7 +605,7 @@ export default function ImpostazioniPage() {
                                                 <tr key={index}>
                                                     <td>{secondoFattore.descrizione.substring(0, secondoFattore.descrizione.indexOf("#"))}</td>
                                                     <td className='text-center'><div className="form-check form-switch">
-                                                        <input className="form-check-input" type="checkbox" checked={secondoFattore.idUtente !== null} onClick={() => { cambiaAbilitazioneSecondoFattore(secondoFattore.idUtente, secondoFattore.idTipoMetodoLogin) }} />
+                                                        <input className="form-check-input" type="checkbox" checked={secondoFattore.idUtente !== null} onClick={(e) => { cambiaAbilitazioneSecondoFattore(secondoFattore.idUtente, secondoFattore.idTipoMetodoLogin) }} />
                                                     </div></td>
                                                 </tr>
                                             )}
@@ -577,7 +620,7 @@ export default function ImpostazioniPage() {
                 </div>
             </div>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center">
                         <h3 className="mb-1">
@@ -606,7 +649,7 @@ export default function ImpostazioniPage() {
                                                 <tr key={index}>
                                                     <td>{secondoFattore.descrizione.substring(0, secondoFattore.descrizione.indexOf("#"))}</td>
                                                     <td className='text-center'><div className="form-check form-switch">
-                                                        <input className="form-check-input" type="checkbox" checked={secondoFattore.idUtente !== null} onClick={() => { cambiaAbilitazioneSecondoFattoreRecuperoPassword(secondoFattore.idUtente, secondoFattore.idTipoMetodoRecPsw) }} />
+                                                        <input className="form-check-input" type="checkbox" checked={secondoFattore.idUtente !== null} onClick={(e) => { cambiaAbilitazioneSecondoFattoreRecuperoPassword(secondoFattore.idUtente, secondoFattore.idTipoMetodoRecPsw) }} />
                                                     </div></td>
                                                 </tr>
                                             )}
@@ -621,7 +664,7 @@ export default function ImpostazioniPage() {
                 </div>
             </div>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center">
                         <h3 className="mb-3">
@@ -668,7 +711,72 @@ export default function ImpostazioniPage() {
                 </div>}
             </div>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
+                <div className="card-header pb-0">
+                    <div className="d-flex align-items-center">
+                        <h3 className="mb-1">
+                            <i className="fa-solid fa-passport text-primary fa-1x pe-2 "></i>
+                            Chiave Globale
+                        </h3>
+                        {!mostraChiaveGlobale &&
+                            <button onClick={getChiaveGlobale} className="btn btn-primary ms-auto">Mostra chiave globale<i className='fa-solid fa-eye ps-2'></i></button>
+                        }
+                        {mostraChiaveGlobale &&
+                            <button onClick={() => { setMostraChiaveGlobale(false); setChiaveGlobale("") }} className="btn btn-primary ms-auto"><i className='fa-solid fa-eye-slash pe-2'></i>Nascondi chiave globale</button>
+                        }
+                    </div>
+                </div>
+
+                <div className="card-body p-3">
+                    <div className="row gx-4">
+
+                        <>
+                            {chiaveGloabale !== "" && <div className='col-12 text-center'>
+                                <QRCode className='w-100 ' fgColor='#344767' value={chiaveGloabale} />
+                                <small>Scansiona il QR-Code con Google Authenticator o Microsoft Authenticator</small>
+
+                            </div>}
+                        </>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div className="card shadow-lg mx-1 mt-3">
+                <div className="card-header pb-0">
+                    <div className="d-flex align-items-center">
+                        <h3 className="mb-1">
+                            <i className="fa-solid fa-key text-primary fa-1x pe-2 "></i>
+                            Chiave personale TOTP
+                        </h3>
+                        {idChiavePersonaleTotp === "" &&
+                            <button onClick={generaChiavePersonaleTOTP} className="btn btn-primary ms-auto">Genera nuova chiave<i className='fa-solid fa-plus ps-2'></i></button>
+                        }
+                        {idChiavePersonaleTotp !== "" &&
+                            <button onClick={() => { setIdChiavePersonaleTotp("") }} className="btn btn-primary ms-auto"><i className='fa-solid fa-eye-slash pe-2'></i>Nascondi chiave</button>
+                        }
+                    </div>
+                </div>
+
+                <div className="card-body p-3">
+                    <div className="row gx-4">
+
+
+                        {idChiavePersonaleTotp !== "" && <div className='col-12 text-center'>
+                            <QRCode className='w-100 ' fgColor='#344767' value={idChiavePersonaleTotp} />
+                            <small>Le chiavi precedenti sono state invalidate</small>
+
+                        </div>
+
+                        }
+                    </div>
+                </div>
+
+            </div>
+
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center">
                         <h3 className="mb-1">
@@ -683,6 +791,7 @@ export default function ImpostazioniPage() {
                         }
                     </div>
                 </div>
+
                 <div className="card-body p-3">
                     <div className="row gx-4">
 
@@ -737,7 +846,7 @@ export default function ImpostazioniPage() {
 
             </div>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center">
                         <h3 className="mb-1">
@@ -807,7 +916,7 @@ export default function ImpostazioniPage() {
             </div>
 
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center">
                         <h3 className="mb-1">

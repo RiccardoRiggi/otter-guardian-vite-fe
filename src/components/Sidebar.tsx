@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import configurazione from '../configurazione';
-//@ts-ignore
-import { fetchMenuAction } from '../modules/utenteLoggato/actions';
 import vociMenuService from '../services/VociMenuService';
+import { toast } from 'react-toastify'
+// @ts-ignore
+import { fetchMenuAction } from '../modules/utenteLoggato/actions';
+import configurazione from '../configurazione';
+// @ts-ignore
+import { fetchIsLoadingAction } from '../modules/feedback/actions';
 
 export default function Sidebar() {
 
@@ -16,13 +18,14 @@ export default function Sidebar() {
     const getVociMenu = async () => {
 
 
-        await vociMenuService.getVociMenuPerUtente(utenteLoggato.token).then((response: any) => {
+        await vociMenuService.getVociMenuPerUtente(utenteLoggato.token).then(response => {
             console.info(response.data);
+            dispatch(fetchIsLoadingAction(false));
 
             dispatch(fetchMenuAction(response.data));
 
 
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -47,6 +50,7 @@ export default function Sidebar() {
 
 
     // Toggle Sidenav
+    const iconNavbarSidenav: any = document.getElementById('iconNavbarSidenav');
     const iconSidenav: any = document.getElementById('iconSidenav');
     let sidenav: any = document.getElementById('sidenav-main');
     let body = document.getElementsByTagName('body')[0];

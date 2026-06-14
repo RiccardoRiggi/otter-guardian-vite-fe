@@ -9,163 +9,173 @@ let homePage: BreadcrumbType =
   path: "/"
 }
 
+let pannelloDiControllo: BreadcrumbType =
+{
+  nome: "Pannello di controllo",
+  path: "/pannello-di-controllo"
+}
+
 let impostazioni: BreadcrumbType =
 {
   nome: "Impostazioni Utente",
-  path: "/impostazioni"
+  path: "/pannello-di-controllo/impostazioni"
 }
 
 let visualizzaLog: BreadcrumbType =
 {
   nome: "Visualizza log",
-  path: "/logs"
+  path: "/pannello-di-controllo/logs"
 }
 
 let visualizzaLogError: BreadcrumbType =
 {
   nome: "Livello Error",
-  path: "/logs/error"
+  path: "/pannello-di-controllo/logs/error"
 }
 
 let visualizzaLogWarn: BreadcrumbType =
 {
   nome: "Livello Warn",
-  path: "/logs/warn"
+  path: "/pannello-di-controllo/logs/warn"
 }
 
 let visualizzaLogInfo: BreadcrumbType =
 {
   nome: "Livello Info",
-  path: "/logs/info"
+  path: "/pannello-di-controllo/logs/info"
 }
 
 let visualizzaLogDebug: BreadcrumbType =
 {
   nome: "Livello Debug",
-  path: "/logs/debug"
+  path: "/pannello-di-controllo/logs/debug"
 }
 
 let listaVociDiMenu: BreadcrumbType =
 {
   nome: "Lista voci di menu",
-  path: "/lista-menu"
+  path: "/pannello-di-controllo/lista-menu"
 }
 
 let listaNotificheUtente: BreadcrumbType =
 {
   nome: "Lista notifiche",
-  path: "/lista-notifiche-utente"
+  path: "/pannello-di-controllo/lista-notifiche-utente"
 }
 
 let schedaUtente: BreadcrumbType =
 {
   nome: "Scheda utente",
-  path: "/scheda-utente"
+  path: "/pannello-di-controllo/scheda-utente"
 }
 
 let listaUtenti: BreadcrumbType =
 {
   nome: "Lista utenti",
-  path: "/lista-utenti"
+  path: "/pannello-di-controllo/lista-utenti"
 }
 
 let listaRuoli: BreadcrumbType =
 {
   nome: "Lista ruoli",
-  path: "/lista-ruoli"
+  path: "/pannello-di-controllo/lista-ruoli"
 }
 
 let schedaRuolo: BreadcrumbType =
 {
   nome: "Scheda ruolo",
-  path: "/scheda-ruolo"
+  path: "/pannello-di-controllo/scheda-ruolo"
 }
 
 let listaRisorse: BreadcrumbType =
 {
   nome: "Lista risorse",
-  path: "/lista-risorse"
+  path: "/pannello-di-controllo/lista-risorse"
 }
 
 let schedaRisorsa: BreadcrumbType =
 {
   nome: "Scheda risorsa",
-  path: "/scheda-risorsa"
+  path: "/pannello-di-controllo/scheda-risorsa"
 }
 
 let listaIndirizziIp: BreadcrumbType =
 {
   nome: "Lista indirizzi IP",
-  path: "/lista-indirizzi-ip"
+  path: "/pannello-di-controllo/lista-indirizzi-ip"
 }
 
 let listaDispositiviFisici: BreadcrumbType =
 {
   nome: "Lista dispositivi fisici",
-  path: "/lista-dispositivi-fisici"
+  path: "/pannello-di-controllo/lista-dispositivi-fisici"
 }
 
 let schedaVoceMenu: BreadcrumbType =
 {
   nome: "Scheda voce menu",
-  path: "/scheda-voce-menu"
+  path: "/pannello-di-controllo/scheda-voce-menu"
 }
 
 let schedaNotifica: BreadcrumbType =
 {
   nome: "Scheda notifica",
-  path: "/scheda-notifica"
+  path: "/pannello-di-controllo/scheda-notifica"
 }
 
 let listaNotifiche: BreadcrumbType =
 {
   nome: "Lista notifiche",
-  path: "/lista-notifiche"
+  path: "/pannello-di-controllo/lista-notifiche"
 }
 
 let listaAccessi: BreadcrumbType =
 {
   nome: "Lista accessi",
-  path: "/lista-accessi"
+  path: "/pannello-di-controllo/lista-accessi"
 }
 
 export default function BreadcrumbsMap(pathName: any) {
   let array: BreadcrumbType[] = [];
   array.push(homePage);
 
+  if ("/pannello-di-controllo" === pathName) {
+    array.push(pannelloDiControllo);
+  }
+
   if ("/impostazioni" === pathName) {
     array.push(impostazioni);
   }
 
-  if ("/logs/error" === pathName) {
+  if ("/pannello-di-controllo/logs/error" === pathName) {
     array.push(visualizzaLog);
     array.push(visualizzaLogError)
   }
 
-  if ("/logs/warn" === pathName) {
+  if ("/pannello-di-controllo/logs/warn" === pathName) {
     array.push(visualizzaLog);
     array.push(visualizzaLogWarn)
   }
 
-  if ("/logs/info" === pathName) {
+  if ("/pannello-di-controllo/logs/info" === pathName) {
     array.push(visualizzaLog);
     array.push(visualizzaLogInfo)
   }
 
-  if ("/logs/debug" === pathName) {
+  if ("/pannello-di-controllo/logs/debug" === pathName) {
     array.push(visualizzaLog);
     array.push(visualizzaLogDebug)
   }
 
-  if ("/logs" === pathName) {
+  if ("/pannello-di-controllo/logs" === pathName) {
     array.push(visualizzaLog);
   }
 
-  if ("/lista-menu" === pathName) {
+  if ("/pannello-di-controllo/lista-menu" === pathName) {
     array.push(listaVociDiMenu);
   }
 
-  if ("/lista-notifiche-utente" === pathName) {
+  if ("/pannello-di-controllo/lista-notifiche-utente" === pathName) {
     array.push(listaNotificheUtente);
   }
 
@@ -174,11 +184,11 @@ export default function BreadcrumbsMap(pathName: any) {
     array.push(schedaUtente);
   }
 
-  if ("/lista-utenti" === pathName) {
+  if ("/pannello-di-controllo/lista-utenti" === pathName) {
     array.push(listaUtenti);
   }
 
-  if ("/lista-ruoli" === pathName) {
+  if ("/pannello-di-controllo/lista-ruoli" === pathName) {
     array.push(listaRuoli);
   }
 
@@ -187,7 +197,7 @@ export default function BreadcrumbsMap(pathName: any) {
     array.push(schedaRuolo);
   }
 
-  if ("/lista-risorse" === pathName) {
+  if ("/pannello-di-controllo/lista-risorse" === pathName) {
     array.push(listaRisorse);
   }
 
@@ -196,11 +206,11 @@ export default function BreadcrumbsMap(pathName: any) {
     array.push(schedaRisorsa);
   }
 
-  if ("/lista-indirizzi-ip" === pathName) {
+  if ("/pannello-di-controllo/lista-indirizzi-ip" === pathName) {
     array.push(listaIndirizziIp);
   }
 
-  if ("/lista-dispositivi-fisici" === pathName) {
+  if ("/pannello-di-controllo/lista-dispositivi-fisici" === pathName) {
     array.push(listaDispositiviFisici);
   }
 
@@ -214,11 +224,11 @@ export default function BreadcrumbsMap(pathName: any) {
     array.push(schedaNotifica);
   }
 
-  if ("/lista-notifiche" === pathName) {
+  if ("/pannello-di-controllo/lista-notifiche" === pathName) {
     array.push(listaNotifiche);
   }
 
-  if ("/lista-accessi" === pathName) {
+  if ("/pannello-di-controllo/lista-accessi" === pathName) {
     array.push(listaAccessi);
   }
 

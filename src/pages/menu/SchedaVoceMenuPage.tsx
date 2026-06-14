@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import {useNavigate, useParams } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 import Layout from '../../components/Layout';
-//@ts-ignore
+// @ts-ignore
 import { fetchIsLoadingAction } from '../../modules/feedback/actions';
 import comboService from '../../services/ComboService';
 import vociMenuService from '../../services/VociMenuService';
@@ -35,14 +35,14 @@ export default function SchedaVoceMenuPage() {
 
     const getVoceMenu = async () => {
         dispatch(fetchIsLoadingAction(true));
-        await vociMenuService.getVoceMenu(utenteLoggato.token, params.idVoceMenu).then((response: any) => {
+        await vociMenuService.getVoceMenu(utenteLoggato.token, params.idVoceMenu).then(response => {
             setIdVoceMenuPadre(response.data.idVoceMenuPadre);
             setDescrizione(response.data.descrizione);
             setPath(response.data.path);
             setIcona(response.data.icona);
             setOrdine(response.data.ordine);
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             dispatch(fetchIsLoadingAction(false));
             //---------------------------------------------
             try {
@@ -84,13 +84,13 @@ export default function SchedaVoceMenuPage() {
 
             if (params.idVoceMenu === undefined) {
                 dispatch(fetchIsLoadingAction(true));
-                await vociMenuService.inserisciVoceMenu(utenteLoggato.token, jsonBody).then((response: any) => {
+                await vociMenuService.inserisciVoceMenu(utenteLoggato.token, jsonBody).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Voce di menu salvata con successo!", {
                         position: "top-center",
                         autoClose: 5000,
-                    }); navigate("/scheda-voce-menu/" + response.data);
-                }).catch((e: any) => {
+                    }); navigate("/pannello-di-controllo/scheda-voce-menu/" + response.data);
+                }).catch(e => {
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
                     try {
@@ -112,13 +112,13 @@ export default function SchedaVoceMenuPage() {
                 });
             } else {
                 dispatch(fetchIsLoadingAction(true));
-                await vociMenuService.modificaVoceMenu(utenteLoggato.token, jsonBody, params.idVoceMenu).then(() => {
+                await vociMenuService.modificaVoceMenu(utenteLoggato.token, jsonBody, params.idVoceMenu).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Voce di menu aggiornata con successo!", {
                         position: "top-center",
                         autoClose: 5000,
                     });
-                }).catch((e: any) => {
+                }).catch(e => {
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
                     try {
@@ -145,10 +145,10 @@ export default function SchedaVoceMenuPage() {
 
     const getComboVociMenu = async () => {
         dispatch(fetchIsLoadingAction(true));
-        await comboService.getComboVociMenu(utenteLoggato.token).then((response: any) => {
+        await comboService.getComboVociMenu(utenteLoggato.token).then(response => {
             setListaVociMenu(response.data);
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             dispatch(fetchIsLoadingAction(false));
             //---------------------------------------------
             try {
@@ -185,7 +185,7 @@ export default function SchedaVoceMenuPage() {
     return (
         <Layout>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 import Layout from '../../components/Layout';
-//@ts-ignore
+// @ts-ignore
 import { fetchIsLoadingAction } from '../../modules/feedback/actions';
 import ruoliService from '../../services/RuoliService';
 import SchedaRuoloValidator from '../../validators/SchedaRuoloValidator';
@@ -25,11 +25,11 @@ export default function SchedaRuoloPage() {
 
     const getRuolo = async () => {
         dispatch(fetchIsLoadingAction(true));
-        await ruoliService.getRuolo(utenteLoggato.token, params.idTipoRuolo).then((response: any) => {
+        await ruoliService.getRuolo(utenteLoggato.token, params.idTipoRuolo).then(response => {
             setIdTipoRuolo(response.data.idTipoRuolo);
             setDescrizione(response.data.descrizione);
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             dispatch(fetchIsLoadingAction(false));
             //---------------------------------------------
             try {
@@ -66,14 +66,14 @@ export default function SchedaRuoloPage() {
 
             if (params.idTipoRuolo === undefined) {
                 dispatch(fetchIsLoadingAction(true));
-                await ruoliService.inserisciRuolo(utenteLoggato.token, jsonBody).then(() => {
+                await ruoliService.inserisciRuolo(utenteLoggato.token, jsonBody).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Ruolo inserito con successo!", {
                         position: "top-center",
                         autoClose: 5000,
                     });
-                    navigate("/scheda-ruolo/" + idTipoRuolo);
-                }).catch((e: any) => {
+                    navigate("/pannello-di-controllo/scheda-ruolo/" + idTipoRuolo);
+                }).catch(e => {
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
                     try {
@@ -95,13 +95,13 @@ export default function SchedaRuoloPage() {
                 });
             } else {
                 dispatch(fetchIsLoadingAction(true));
-                await ruoliService.modificaRuolo(utenteLoggato.token, jsonBody, params.idTipoRuolo).then(() => {
+                await ruoliService.modificaRuolo(utenteLoggato.token, jsonBody, params.idTipoRuolo).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Ruolo aggiornato con successo!", {
                         position: "top-center",
                         autoClose: 5000,
                     });
-                }).catch((e: any) => {
+                }).catch(e => {
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
                     try {
@@ -147,7 +147,7 @@ export default function SchedaRuoloPage() {
 
         if (pagina !== 0) {
 
-            await ruoliService.getUtentiPerRuolo(utenteLoggato.token, params.idTipoRuolo, pagina).then((response: any) => {
+            await ruoliService.getUtentiPerRuolo(utenteLoggato.token, params.idTipoRuolo, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setListaUtentiPerRuolo(response.data);
@@ -161,7 +161,7 @@ export default function SchedaRuoloPage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -185,13 +185,13 @@ export default function SchedaRuoloPage() {
 
     const cambiaAbilitazioneUtente = async (dataCreazione: any, idUtente: any) => {
         if (dataCreazione === null) {
-            await ruoliService.associaRuoloUtente(utenteLoggato.token, null, params.idTipoRuolo, idUtente).then(() => {
+            await ruoliService.associaRuoloUtente(utenteLoggato.token, null, params.idTipoRuolo, idUtente).then(response => {
                 getUtentiPerRuolo(paginaUtenti);
                 toast.success("Utente aggiunto con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -211,13 +211,13 @@ export default function SchedaRuoloPage() {
                 //---------------------------------------------
             });
         } else {
-            await ruoliService.dissociaRuoloUtente(utenteLoggato.token, null, params.idTipoRuolo, idUtente).then(() => {
+            await ruoliService.dissociaRuoloUtente(utenteLoggato.token, null, params.idTipoRuolo, idUtente).then(response => {
                 getUtentiPerRuolo(paginaUtenti);
                 toast.success("Utente rimosso con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -246,7 +246,7 @@ export default function SchedaRuoloPage() {
 
         if (pagina !== 0) {
 
-            await ruoliService.getRisorsePerRuolo(utenteLoggato.token, params.idTipoRuolo, pagina).then((response: any) => {
+            await ruoliService.getRisorsePerRuolo(utenteLoggato.token, params.idTipoRuolo, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setListaRisorsePerRuolo(response.data);
@@ -260,7 +260,7 @@ export default function SchedaRuoloPage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -284,13 +284,13 @@ export default function SchedaRuoloPage() {
 
     const cambiaAbilitazioneRisorse = async (dataCreazione: any, idRisorsa: any) => {
         if (dataCreazione === null) {
-            await ruoliService.associaRuoloRisorsa(utenteLoggato.token, null, params.idTipoRuolo, idRisorsa).then(() => {
+            await ruoliService.associaRuoloRisorsa(utenteLoggato.token, null, params.idTipoRuolo, idRisorsa).then(response => {
                 getRisorsePerRuolo(paginaRisorse);
                 toast.success("Risorsa aggiunta con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -310,13 +310,13 @@ export default function SchedaRuoloPage() {
                 //---------------------------------------------
             });
         } else {
-            await ruoliService.dissociaRuoloRisorsa(utenteLoggato.token, null, params.idTipoRuolo, idRisorsa).then(() => {
+            await ruoliService.dissociaRuoloRisorsa(utenteLoggato.token, null, params.idTipoRuolo, idRisorsa).then(response => {
                 getRisorsePerRuolo(paginaRisorse);
                 toast.success("Risorsa rimossa con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -346,7 +346,7 @@ export default function SchedaRuoloPage() {
 
         if (pagina !== 0) {
 
-            await ruoliService.getVociMenuPerRuolo(utenteLoggato.token, params.idTipoRuolo, pagina).then((response: any) => {
+            await ruoliService.getVociMenuPerRuolo(utenteLoggato.token, params.idTipoRuolo, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setListaVociMenuPerRuolo(response.data);
@@ -359,7 +359,7 @@ export default function SchedaRuoloPage() {
                     });
                 }
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -383,13 +383,13 @@ export default function SchedaRuoloPage() {
 
     const cambiaAbilitazioneVociMenu = async (dataCreazione: any, idVoceMenu: any) => {
         if (dataCreazione === null) {
-            await ruoliService.associaRuoloVoceMenu(utenteLoggato.token, null, params.idTipoRuolo, idVoceMenu).then(() => {
+            await ruoliService.associaRuoloVoceMenu(utenteLoggato.token, null, params.idTipoRuolo, idVoceMenu).then(response => {
                 getVociMenuPerRuolo(paginaVociMenu);
                 toast.success("Voce menu aggiunta con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -409,13 +409,13 @@ export default function SchedaRuoloPage() {
                 //---------------------------------------------
             });
         } else {
-            await ruoliService.dissociaRuoloVoceMenu(utenteLoggato.token, null, params.idTipoRuolo, idVoceMenu).then(() => {
+            await ruoliService.dissociaRuoloVoceMenu(utenteLoggato.token, null, params.idTipoRuolo, idVoceMenu).then(response => {
                 getVociMenuPerRuolo(paginaVociMenu);
                 toast.success("Voce menu rimossa con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -440,7 +440,7 @@ export default function SchedaRuoloPage() {
     return (
         <Layout>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">
@@ -484,7 +484,7 @@ export default function SchedaRuoloPage() {
             </div>
 
             {params.idTipoRuolo !== undefined &&
-                <div className="card shadow-lg mx-4 mt-3">
+                <div className="card shadow-lg mx-1 mt-3">
                     <div className="card-header pb-0">
                         <div className="d-flex align-items-center justify-content-between">
                             <h3 className="">
@@ -520,7 +520,7 @@ export default function SchedaRuoloPage() {
                                                         <td>{ruolo.email}</td>
 
                                                         <td className='text-center'><div className="form-check form-switch">
-                                                            <input className="form-check-input" type="checkbox" checked={ruolo.dataCreazione !== null} onClick={() => { cambiaAbilitazioneUtente(ruolo.dataCreazione, ruolo.idUtente) }} />
+                                                            <input className="form-check-input" type="checkbox" checked={ruolo.dataCreazione !== null} onClick={(e) => { cambiaAbilitazioneUtente(ruolo.dataCreazione, ruolo.idUtente) }} />
                                                         </div></td>
                                                     </tr>
                                                 )}
@@ -547,7 +547,7 @@ export default function SchedaRuoloPage() {
             }
 
             {params.idTipoRuolo !== undefined &&
-                <div className="card shadow-lg mx-4 mt-3">
+                <div className="card shadow-lg mx-1 mt-3">
                     <div className="card-header pb-0">
                         <div className="d-flex align-items-center justify-content-between">
                             <h3 className="">
@@ -581,7 +581,7 @@ export default function SchedaRuoloPage() {
                                                         <td>{ruolo.descrizione}</td>
 
                                                         <td className='text-center'><div className="form-check form-switch">
-                                                            <input className="form-check-input" type="checkbox" checked={ruolo.dataCreazione !== null} onClick={() => { cambiaAbilitazioneRisorse(ruolo.dataCreazione, ruolo.idRisorsa) }} />
+                                                            <input className="form-check-input" type="checkbox" checked={ruolo.dataCreazione !== null} onClick={(e) => { cambiaAbilitazioneRisorse(ruolo.dataCreazione, ruolo.idRisorsa) }} />
                                                         </div></td>
                                                     </tr>
                                                 )}
@@ -608,7 +608,7 @@ export default function SchedaRuoloPage() {
             }
 
             {params.idTipoRuolo !== undefined &&
-                <div className="card shadow-lg mx-4 mt-3">
+                <div className="card shadow-lg mx-1 mt-3">
                     <div className="card-header pb-0">
                         <div className="d-flex align-items-center justify-content-between">
                             <h3 className="">
@@ -643,7 +643,7 @@ export default function SchedaRuoloPage() {
                                                         <td>{ruolo.descrizione}</td>
                                                         <td>{ruolo.path}</td>
                                                         <td className='text-center'><div className="form-check form-switch">
-                                                            <input className="form-check-input" type="checkbox" checked={ruolo.dataCreazione !== null} onClick={() => { cambiaAbilitazioneVociMenu(ruolo.dataCreazione, ruolo.idVoceMenu) }} />
+                                                            <input className="form-check-input" type="checkbox" checked={ruolo.dataCreazione !== null} onClick={(e) => { cambiaAbilitazioneVociMenu(ruolo.dataCreazione, ruolo.idVoceMenu) }} />
                                                         </div></td>
                                                     </tr>
                                                 )}

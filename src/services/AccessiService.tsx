@@ -5,21 +5,19 @@ let root = "/gestioneAccessi.php";
 const getListaAccessi = (token: any, pagina: any) => {
     const params = new URLSearchParams([["nomeMetodo", "getListaAccessi"], ["pagina", pagina]]);
     const headers = {
-        "X-Token": token,
-        "Content-type": "application/json",
+        token: token,
     }
 
-    return http.get(root, { params, headers: headers });
+    return http.get(root, { params, headers });
 }
 
 const terminaAccesso = (token: any, jsonBody: any) => {
     const params = new URLSearchParams([["nomeMetodo", "terminaAccesso"]]);
     const headers = {
-        "X-Token": token,
-        "Content-type": "application/json",
+        token: token,
     }
 
-    return http.put(root, jsonBody, { params, headers: headers });
+    return http.put(root, jsonBody, { params, headers });
 }
 
 const gestioneAccessiService = {

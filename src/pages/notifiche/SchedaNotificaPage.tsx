@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Layout from '../../components/Layout';
 import { getData, getOra } from '../../DateUtil';
-//@ts-ignore
+// @ts-ignore
 import { fetchIsLoadingAction } from '../../modules/feedback/actions';
 import comboService from '../../services/ComboService';
 import notificheService from '../../services/NotificheService';
@@ -26,11 +26,11 @@ export default function SchedaNotificaPage() {
 
     const getNotifica = async () => {
         dispatch(fetchIsLoadingAction(true));
-        await notificheService.getNotifica(utenteLoggato.token, params.idNotifica).then((response: any) => {
+        await notificheService.getNotifica(utenteLoggato.token, params.idNotifica).then(response => {
             setTitolo(response.data.titolo);
             setTesto(response.data.testo);
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             dispatch(fetchIsLoadingAction(false));
             //---------------------------------------------
             try {
@@ -68,14 +68,14 @@ export default function SchedaNotificaPage() {
 
             if (params.idNotifica === undefined) {
                 dispatch(fetchIsLoadingAction(true));
-                await notificheService.inserisciNotifica(utenteLoggato.token, jsonBody).then(() => {
+                await notificheService.inserisciNotifica(utenteLoggato.token, jsonBody).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Notifica inserita con successo!", {
                         position: "top-center",
                         autoClose: 5000,
                     });
-                    navigate("/lista-notifiche/");
-                }).catch((e: any) => {
+                    navigate("/pannello-di-controllo/lista-notifiche/");
+                }).catch(e => {
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
                     try {
@@ -97,13 +97,13 @@ export default function SchedaNotificaPage() {
                 });
             } else {
                 dispatch(fetchIsLoadingAction(true));
-                await notificheService.modificaNotifica(utenteLoggato.token, jsonBody, params.idNotifica).then(() => {
+                await notificheService.modificaNotifica(utenteLoggato.token, jsonBody, params.idNotifica).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Notifica aggiornata con successo!", {
                         position: "top-center",
                         autoClose: 5000,
                     });
-                }).catch((e: any) => {
+                }).catch(e => {
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
                     try {
@@ -150,7 +150,7 @@ export default function SchedaNotificaPage() {
 
         if (pagina !== 0) {
 
-            await notificheService.getDestinatariNotifica(utenteLoggato.token, pagina, params.idNotifica).then((response: any) => {
+            await notificheService.getDestinatariNotifica(utenteLoggato.token, pagina, params.idNotifica).then(response => {
 
                 if (response.data.length !== 0) {
                     setListaDestinatari(response.data);
@@ -164,7 +164,7 @@ export default function SchedaNotificaPage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -187,14 +187,14 @@ export default function SchedaNotificaPage() {
     }
 
 
-    const inviaNotificaUtente = async (idUtente: any) => {
-        await notificheService.inviaNotificaUtente(utenteLoggato.token, idUtente, params.idNotifica).then(() => {
+    const inviaNotificaUtente = async (idUtente: any, invioViaTelegram: boolean) => {
+        await notificheService.inviaNotificaUtente(utenteLoggato.token, idUtente, params.idNotifica, invioViaTelegram).then(response => {
             getDestinatariNotifica(paginaDestinatari)
             toast.success("Notifica inviata con successo", {
                 position: "top-center",
                 autoClose: 5000,
             });
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -215,14 +215,14 @@ export default function SchedaNotificaPage() {
         });
     }
 
-    const inviaNotificaTutti = async () => {
-        await notificheService.inviaNotificaTutti(utenteLoggato.token, params.idNotifica).then(() => {
+    const inviaNotificaTutti = async (invioViaTelegram: boolean) => {
+        await notificheService.inviaNotificaTutti(utenteLoggato.token, params.idNotifica, invioViaTelegram).then(response => {
             getDestinatariNotifica(paginaDestinatari)
             toast.success("Notifica inviata a tutti gli utenti con successo", {
                 position: "top-center",
                 autoClose: 5000,
             });
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -253,10 +253,10 @@ export default function SchedaNotificaPage() {
 
     const getComboRuoli = async () => {
         dispatch(fetchIsLoadingAction(true));
-        await comboService.getComboRuoli(utenteLoggato.token).then((response: any) => {
+        await comboService.getComboRuoli(utenteLoggato.token).then(response => {
             setListaRuoli(response.data);
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             dispatch(fetchIsLoadingAction(false));
             //---------------------------------------------
             try {
@@ -278,20 +278,20 @@ export default function SchedaNotificaPage() {
         });
     }
 
-    const inviaNotificaRuolo = async () => {
+    const inviaNotificaRuolo = async (invioViaTelegram: boolean) => {
         if (idRuolo === null || idRuolo === undefined || idRuolo === "") {
             toast.warning("Devi scegliere un ruolo per proseguire", {
                 position: "top-center",
                 autoClose: 5000,
             });
         } else {
-            await notificheService.inviaNotificaRuolo(utenteLoggato.token, idRuolo, params.idNotifica).then(() => {
+            await notificheService.inviaNotificaRuolo(utenteLoggato.token, idRuolo, params.idNotifica, invioViaTelegram).then(response => {
                 getDestinatariNotifica(paginaDestinatari)
                 toast.success("Notifica inviata con successo a tutti gli utenti che hanno associato il ruolo selezionato", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -319,7 +319,7 @@ export default function SchedaNotificaPage() {
     return (
         <Layout>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">
@@ -362,7 +362,7 @@ export default function SchedaNotificaPage() {
             </div>
 
             {params.idNotifica !== undefined &&
-                <div className="card shadow-lg mx-4 mt-3">
+                <div className="card shadow-lg mx-1 mt-3">
                     <div className="card-header pb-0">
                         <div className="d-flex align-items-center justify-content-between">
                             <h3 className="">
@@ -375,13 +375,19 @@ export default function SchedaNotificaPage() {
                     <div className="card-body p-3">
                         <div className="row gx-4">
 
-                            <div className='col-3'>
-                                <span onClick={() => inviaNotificaTutti()} className='btn btn-primary'>Invia notifica a tutti gli utenti<i className="ps-1 fa-solid fa-share"></i></span>
+                            <div className='col-6'>
+                                <span onClick={() => inviaNotificaTutti(false)} className='btn btn-primary'>Invia notifica a tutti gli utenti<i className="ps-1 fa-solid fa-share"></i></span>
                             </div>
-                            <div className='col-1'>
-                                oppure
+                            <div className='col-6'>
+                                <span onClick={() => inviaNotificaTutti(true)} className='btn btn-primary'>Invia notifica a tutti gli utenti anche tramite Telegram<i className="ps-1 fa-solid fa-share"></i></span>
                             </div>
+
+                            <div className='col-12'>
+                                <hr />
+                            </div>
+
                             <div className='col-4'>
+                                <label htmlFor="idVoceMenuPadre" className="form-label">Seleziona ruolo</label>
 
                                 <select name='idVoceMenuPadre' className={"form-control"} onChange={aggiornaRuolo} value={idRuolo}>
                                     <option value={""}>Scegli...</option>
@@ -391,7 +397,10 @@ export default function SchedaNotificaPage() {
                                 </select>
                             </div>
                             <div className='col-4'>
-                                <span onClick={() => inviaNotificaRuolo()} className='btn btn-primary'>Invia notifica agli utenti con il ruolo associato<i className="ps-1 fa-solid fa-share"></i></span>
+                                <span onClick={() => inviaNotificaRuolo(false)} className='btn btn-primary'>Invia notifica agli utenti con il ruolo associato<i className="ps-1 fa-solid fa-share"></i></span>
+                            </div>
+                            <div className='col-4'>
+                                <span onClick={() => inviaNotificaRuolo(true)} className='btn btn-primary'>Invia notifica agli utenti con il ruolo associato anche tramite Telegram<i className="ps-1 fa-solid fa-share"></i></span>
                             </div>
                         </div>
                     </div>
@@ -400,7 +409,7 @@ export default function SchedaNotificaPage() {
             }
 
             {params.idNotifica !== undefined &&
-                <div className="card shadow-lg mx-4 mt-3">
+                <div className="card shadow-lg mx-1 mt-3">
                     <div className="card-header pb-0">
                         <div className="d-flex align-items-center justify-content-between">
                             <h3 className="">
@@ -431,7 +440,7 @@ export default function SchedaNotificaPage() {
                                                         <td>{notifica.nome}</td>
                                                         <td>{notifica.cognome}</td>
                                                         {notifica.dataInvio === null &&
-                                                            <td className='text-center'><span onClick={() => inviaNotificaUtente(notifica.idUtente)} className='btn btn-primary'><i className="fa-solid fa-share"></i></span></td>
+                                                            <td className='text-center'><span onClick={() => inviaNotificaUtente(notifica.idUtente, false)} className='btn btn-primary'><i className="fa-solid fa-share"></i></span><span onClick={() => inviaNotificaUtente(notifica.idUtente, true)} className='btn btn-primary'><i className="fa-solid fa-share"></i><i className="fa-brands fa-telegram"></i></span></td>
                                                         }
                                                         {notifica.dataInvio !== null && notifica.dataLettura === null &&
                                                             <td className='text-center'>Inviata alle ore {getOra(notifica.dataInvio)} del {getData(notifica.dataInvio)}</td>

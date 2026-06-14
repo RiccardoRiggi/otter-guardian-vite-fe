@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
@@ -20,7 +20,7 @@ export default function ListaRuoliPage() {
 
         if (pagina !== 0) {
 
-            await ruoliService.getRuoli(utenteLoggato.token, pagina).then((response: any) => {
+            await ruoliService.getRuoli(utenteLoggato.token, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setRuoli(response.data);
@@ -33,7 +33,7 @@ export default function ListaRuoliPage() {
                     });
                 }
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -56,14 +56,14 @@ export default function ListaRuoliPage() {
     }
 
     const eliminaRuolo = async () => {
-        await ruoliService.eliminaRuolo(utenteLoggato.token, ruoloDaEliminare.idTipoRuolo).then(() => {
+        await ruoliService.eliminaRuolo(utenteLoggato.token, ruoloDaEliminare.idTipoRuolo).then(response => {
             toast.success("Il ruolo è stato eliminato con successo!", {
                 position: "top-center",
                 autoClose: 5000,
             });
             setRuoloDaEliminare(undefined);
             getRuoli(paginaRuolo);
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -94,14 +94,14 @@ export default function ListaRuoliPage() {
     return (
         <Layout>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">
                             <i className="fa-solid fa-list-ul text-primary fa-1x pe-2 "></i>
                             Lista ruoli
                         </h3>
-                        <Link to="/scheda-ruolo" className='btn btn-primary'><i className="fa-solid fa-plus pe-2"></i>Inserisci ruolo</Link>
+                        <Link to="/pannello-di-controllo/scheda-ruolo" className='btn btn-primary'><i className="fa-solid fa-plus pe-2"></i>Inserisci ruolo</Link>
 
                     </div>
                 </div>
@@ -126,7 +126,7 @@ export default function ListaRuoliPage() {
                                                 <tr key={index}>
                                                     <th className='text-center' scope="row">{ruolo.idTipoRuolo}</th>
                                                     <td>{ruolo.descrizione}</td>
-                                                    <td className='text-center'><Link to={"/scheda-ruolo/" + ruolo.idTipoRuolo} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
+                                                    <td className='text-center'><Link to={"/pannello-di-controllo/scheda-ruolo/" + ruolo.idTipoRuolo} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
                                                     <td className='text-center'><span onClick={() => setRuoloDaEliminare(ruolo)} data-bs-toggle="modal" data-bs-target="#eliminaRisorsa" className='btn btn-danger'><i className="fa-solid fa-trash-can"></i></span></td>
                                                 </tr>
                                             )}

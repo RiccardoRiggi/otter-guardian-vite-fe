@@ -32,12 +32,12 @@ export default function SchedaUtentePage() {
 
     const getUtente = async () => {
         dispatch(fetchIsLoadingAction(true));
-        await utentiService.getUtente(utenteLoggato.token, params.idUtente).then((response: any) => {
+        await utentiService.getUtente(utenteLoggato.token, params.idUtente).then(response => {
             setNome(response.data.nome);
             setCognome(response.data.cognome);
             setEmail(response.data.email)
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             dispatch(fetchIsLoadingAction(false));
             //---------------------------------------------
             try {
@@ -97,14 +97,14 @@ export default function SchedaUtentePage() {
 
             if (params.idUtente === undefined) {
                 dispatch(fetchIsLoadingAction(true));
-                await utentiService.inserisciUtente(utenteLoggato.token, jsonBody).then(() => {
+                await utentiService.inserisciUtente(utenteLoggato.token, jsonBody).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Utente inserito con successo!", {
                         position: "top-center",
                         autoClose: 5000,
                     });
-                    navigate("/lista-utenti");
-                }).catch((e: any) => {
+                    navigate("/pannello-di-controllo/lista-utenti");
+                }).catch(e => {
                     console.error(e);
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
@@ -127,13 +127,13 @@ export default function SchedaUtentePage() {
                 });
             } else {
                 dispatch(fetchIsLoadingAction(true));
-                await utentiService.modificaUtente(utenteLoggato.token, jsonBody, params.idUtente).then(() => {
+                await utentiService.modificaUtente(utenteLoggato.token, jsonBody, params.idUtente).then(response => {
                     dispatch(fetchIsLoadingAction(false));
                     toast.success("Utente aggiornato con successo!", {
                         position: "top-center",
                         autoClose: 5000,
                     });
-                }).catch((e: any) => {
+                }).catch(e => {
                     console.error(e);
                     dispatch(fetchIsLoadingAction(false));
                     //---------------------------------------------
@@ -173,7 +173,7 @@ export default function SchedaUtentePage() {
     return (
         <Layout>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">

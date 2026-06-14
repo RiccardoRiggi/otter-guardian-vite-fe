@@ -5,41 +5,37 @@ let root = "/indirizziIp.php";
 const getIndirizziIp = (token: any, pagina: any) => {
     const params = new URLSearchParams([["nomeMetodo", "getIndirizziIp"], ["pagina", pagina]]);
     const headers = {
-        "X-Token": token,
-        "Content-type": "application/json",
+        token: token,
     }
 
-    return http.get(root, { params, headers: headers });
+    return http.get(root, { params, headers });
 }
 
 const sbloccaIndirizzoIp = (token: any, jsonBody: any) => {
     const params = new URLSearchParams([["nomeMetodo", "sbloccaIndirizzoIp"]]);
     const headers = {
-        "X-Token": token,
-        "Content-type": "application/json",
+        token: token,
     }
 
-    return http.put(root, jsonBody, { params, headers: headers });
+    return http.put(root, jsonBody, { params, headers });
 }
 
 const bloccaIndirizzoIp = (token: any, jsonBody: any) => {
     const params = new URLSearchParams([["nomeMetodo", "bloccaIndirizzoIp"]]);
     const headers = {
-        "X-Token": token,
-        "Content-type": "application/json",
+        token: token,
     }
 
-    return http.put(root, jsonBody, { params, headers: headers });
+    return http.put(root, jsonBody, { params, headers });
 }
 
 const azzeraContatoreAlert = (token: any, jsonBody: any) => {
     const params = new URLSearchParams([["nomeMetodo", "azzeraContatoreAlert"]]);
     const headers = {
-        "X-Token": token,
-        "Content-type": "application/json",
+        token: token,
     }
 
-    return http.put(root, jsonBody, { params, headers: headers });
+    return http.put(root, jsonBody, { params, headers });
 }
 
 const indirizziIpService = {

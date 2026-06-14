@@ -5,27 +5,23 @@ let root = "/combo.php";
 const getComboVociMenu = (token: any) => {
     const params = new URLSearchParams([["nomeMetodo", "getComboVociMenu"]]);
     const headers = {
-        "X-Token": token,
-        "Content-type": "application/json",
+        token: token,
     }
 
-    return http.get(root, { params, headers: headers });
+    return http.get(root, { params, headers });
 }
 
 const getComboRuoli = (token: any) => {
     const params = new URLSearchParams([["nomeMetodo", "getComboRuoli"]]);
     const headers = {
-        "X-Token": token,
-        "Content-type": "application/json",
+        token: token,
     }
 
-    return http.get(root, { params, headers: headers });
+    return http.get(root, { params, headers });
 }
-
-
 
 const comboService = {
     getComboVociMenu,
-    getComboRuoli
+    getComboRuoli,
 };
 export default comboService;

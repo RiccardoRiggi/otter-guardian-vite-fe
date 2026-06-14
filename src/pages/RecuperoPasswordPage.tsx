@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import configurazione from '../configurazione';
-//@ts-ignore
+// @ts-ignore
 import { fetchIsLoadingAction } from '../modules/feedback/actions';
+import { toast } from 'react-toastify';
 import recuperoPasswordService from '../services/RecuperoPasswordService';
+import configurazione from '../configurazione';
 
 
 
@@ -13,6 +13,7 @@ export default function RecuperoPasswordPage() {
     const dispatch = useDispatch();
     const feedback = useSelector((state: any) => state.feedback);
 
+    const utenteLoggato = useSelector((state: any) => state.utenteLoggato);
 
 
     const [tipoRecuperoPassword, setTipoRecuperoPassword] = React.useState("");
@@ -75,14 +76,15 @@ export default function RecuperoPasswordPage() {
             email: email,
         }
 
-        await recuperoPasswordService.getMetodiRecuperoPasswordSupportati(jsonBody).then((response: any) => {
+        await recuperoPasswordService.getMetodiRecuperoPasswordSupportati(jsonBody, utenteLoggato.preToken).then(response => {
             console.info(response.data);
             setListaMetodiRecuperoPasswordSupportati(response.data);
 
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             console.error(e);
             dispatch(fetchIsLoadingAction(false));
+            navigate("/login");
         });
     }
 
@@ -98,7 +100,7 @@ export default function RecuperoPasswordPage() {
 
         }
 
-        await recuperoPasswordService.effettuaRichiestaRecuperoPassword(jsonBody).then((response: any) => {
+        await recuperoPasswordService.effettuaRichiestaRecuperoPassword(jsonBody, utenteLoggato.preToken).then(response => {
             console.info(response.data);
             setAttesaSecondoFattore(true);
             setDescrizioneSecondoFattore(response.data.descrizione);
@@ -108,7 +110,7 @@ export default function RecuperoPasswordPage() {
             setAttesaSecondoFattore(true);
 
 
-        }).catch((e: any) => {
+        }).catch(e => {
             console.error(e);
             toast.success("Se l'indirizzo email inserito è associato ad un utente riceverai le istruzioni per proseguire con il recupero della password", {
                 position: "top-center",
@@ -131,7 +133,7 @@ export default function RecuperoPasswordPage() {
 
         }
 
-        await recuperoPasswordService.confermaRecuperoPassword(jsonBody).then((response: any) => {
+        await recuperoPasswordService.confermaRecuperoPassword(jsonBody, utenteLoggato.preToken).then(response => {
             console.info(response.data);
 
 
@@ -139,8 +141,9 @@ export default function RecuperoPasswordPage() {
             navigate("/login");
 
 
-        }).catch((e: any) => {
+        }).catch(e => {
             console.error(e);
+            navigate("/login");
             dispatch(fetchIsLoadingAction(false));
         });
     }
@@ -151,7 +154,11 @@ export default function RecuperoPasswordPage() {
 
     }
 
-
+    useEffect(() => {
+        if (!utenteLoggato.preToken) {
+            navigate("/login");
+        }
+    }, [])
 
     return (
         <>

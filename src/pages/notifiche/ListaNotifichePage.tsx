@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
 import Layout from '../../components/Layout';
@@ -28,7 +28,7 @@ export default function ListaNotifichePage() {
 
         if (pagina !== 0) {
 
-            await notificheService.getListaNotifiche(utenteLoggato.token, pagina).then((response: any) => {
+            await notificheService.getListaNotifiche(utenteLoggato.token, pagina).then(response => {
 
                 if (response.data.length !== 0) {
                     setListaNotifiche(response.data);
@@ -42,7 +42,7 @@ export default function ListaNotifichePage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -65,14 +65,14 @@ export default function ListaNotifichePage() {
     }
 
     const eliminaNotifica = async () => {
-        await notificheService.eliminaNotifica(utenteLoggato.token, notificaDaEliminare.idNotifica).then(() => {
+        await notificheService.eliminaNotifica(utenteLoggato.token, notificaDaEliminare.idNotifica).then(response => {
             setNotificaDaEliminare(undefined);
             toast.success("Notifica eliminata con successo", {
                 position: "top-center",
                 autoClose: 5000,
             });
             getListaNotifiche(paginaNotifiche);
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -97,14 +97,14 @@ export default function ListaNotifichePage() {
 
     return (
         <Layout>
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">
                             <i className="fa-solid fa-bell text-primary fa-1x pe-2 "></i>
                             Gestione notifiche
                         </h3>
-                        <Link to="/scheda-notifica" className='btn btn-primary'><i className="fa-solid fa-plus pe-2"></i>Inserisci notifica</Link>
+                        <Link to="/pannello-di-controllo/scheda-notifica" className='btn btn-primary'><i className="fa-solid fa-plus pe-2"></i>Inserisci notifica</Link>
 
                     </div>
                 </div>
@@ -131,7 +131,7 @@ export default function ListaNotifichePage() {
                                                     <th scope="row">{notifica.titolo}</th>
                                                     <td >{notifica.testo}</td>
                                                     <td >{getData(notifica.dataCreazione)} ore {getOra(notifica.dataCreazione)}</td>
-                                                    <td className='text-center'><Link to={"/scheda-notifica/" + notifica.idNotifica} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
+                                                    <td className='text-center'><Link to={"/pannello-di-controllo/scheda-notifica/" + notifica.idNotifica} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
                                                     <td className='text-center'><span onClick={() => setNotificaDaEliminare(notifica)} data-bs-toggle="modal" data-bs-target="#eliminaRisorsa" className='btn btn-danger'><i className="fa-solid fa-trash-can"></i></span></td>
 
                                                 </tr>

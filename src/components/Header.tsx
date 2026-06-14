@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // @ts-ignore
 import { fetchIsLoadingAction } from '../modules/feedback/actions';
 // @ts-ignore
-import { fetchCognomeAction, fetchDataCreazioneAction, fetchEmailAction, fetchNomeAction, resetUtenteAction } from '../modules/utenteLoggato/actions';
+import { fetchCognomeAction, fetchDataCreazioneAction, fetchEmailAction, fetchIdUtenteAction, fetchNomeAction, resetUtenteAction } from '../modules/utenteLoggato/actions';
 import notificheService from '../services/NotificheService';
 import utenteLoggatoService from '../services/UtenteLoggatoService';
 import BreadCrumb from './Breadcrumbs';
@@ -25,6 +25,7 @@ export default function Header() {
     let dispatch = useDispatch();
 
     // Toggle Sidenav
+    const iconNavbarSidenav: any = document.getElementById('iconNavbarSidenav');
     const iconSidenav: any = document.getElementById('iconSidenav');
     const sidenav: any = document.getElementById('sidenav-main');
     let body = document.getElementsByTagName('body')[0];
@@ -49,11 +50,11 @@ export default function Header() {
     const logout = async () => {
         dispatch(fetchIsLoadingAction(true));
 
-        await utenteLoggatoService.invalidaToken(utenteLoggato.token).then(() => {
+        await utenteLoggatoService.invalidaToken(utenteLoggato.token).then(response => {
             console.info("TOKEN INVALIDATO CON SUCCESSO");
 
 
-        }).catch((e: any) => {
+        }).catch(e => {
             dispatch(fetchIsLoadingAction(false));
             //---------------------------------------------
             try {
@@ -82,8 +83,9 @@ export default function Header() {
         dispatch(fetchIsLoadingAction(true));
 
 
-        await utenteLoggatoService.getUtenteLoggato(utenteLoggato.token).then((response: any) => {
+        await utenteLoggatoService.getUtenteLoggato(utenteLoggato.token).then(response => {
             console.info(response.data);
+            dispatch(fetchIdUtenteAction(response.data.idUtente));
             dispatch(fetchNomeAction(response.data.nome));
             dispatch(fetchCognomeAction(response.data.cognome));
             dispatch(fetchEmailAction(response.data.email));
@@ -91,7 +93,7 @@ export default function Header() {
 
 
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             dispatch(fetchIsLoadingAction(false));
             //---------------------------------------------
             try {
@@ -115,7 +117,7 @@ export default function Header() {
 
     const getNotificheLatoUtente = async () => {
 
-        await notificheService.getNotificheLatoUtente(utenteLoggato.token, 1).then((response: any) => {
+        await notificheService.getNotificheLatoUtente(utenteLoggato.token, 1).then(response => {
             console.info(response.data);
             setNotifiche(response.data);
             let arrayTmp = [];
@@ -132,7 +134,7 @@ export default function Header() {
             }
             setNotificheNonLette(arrayTmp);
 
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -156,11 +158,11 @@ export default function Header() {
 
     const leggiNotificheLatoUtente = async () => {
 
-        await notificheService.leggiNotificheLatoUtente(utenteLoggato.token).then(() => {
+        await notificheService.leggiNotificheLatoUtente(utenteLoggato.token).then(response => {
 
             setNotificheNonLette(0);
 
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -242,7 +244,7 @@ export default function Header() {
                                             <div className="d-flex justify-content-center ">
 
                                                 <div className="d-flex flex-column justify-content-center">
-                                                    <Link className='text-primary' to="/lista-notifiche-utente">Vedi tutte</Link>
+                                                    <Link className='text-primary' to="/pannello-di-controllo/lista-notifiche-utente">Vedi tutte</Link>
                                                 </div>
                                             </div>
 

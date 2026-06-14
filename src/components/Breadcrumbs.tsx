@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-
+import BreadcrumbsMap, { type BreadcrumbType } from "../BreadcrumbsMap";
 import PageTitleMap from "../PageTitleMap";
-import type { BreadcrumbType } from "../BreadcrumbsMap";
-import BreadcrumbsMap from "../BreadcrumbsMap";
 
 export default function BreadCrumb() {
 

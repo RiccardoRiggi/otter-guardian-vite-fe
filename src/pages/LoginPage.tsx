@@ -1,20 +1,22 @@
 import React from 'react';
-import QRCode from "react-qr-code";
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import configurazione from '../configurazione';
-//@ts-ignore
+// @ts-ignore
 import { fetchIsLoadingAction } from '../modules/feedback/actions';
-//@ts-ignore
-import { fetchTokenAction } from '../modules/utenteLoggato/actions';
+// @ts-ignore
+import { fetchPreTokenAction, fetchTokenAction, resetUtenteAction } from '../modules/utenteLoggato/actions';
+import QRCode from "react-qr-code";
 import autenticazioneService from '../services/AutenticazioneService';
+import { ToastContainer, toast } from 'react-toastify';
+import configurazione from '../configurazione';
 
 
 
 export default function LoginPage() {
     const dispatch = useDispatch();
     const feedback = useSelector((state: any) => state.feedback);
+
+    const utenteLoggato = useSelector((state: any) => state.utenteLoggato);
 
 
     const [qrCode, setQrCode] = React.useState("");
@@ -31,14 +33,18 @@ export default function LoginPage() {
     const [codiceSeiCifre, setCodiceSeiCifre] = React.useState("");
     const [codiceSeiCifreError, setCodiceSeiCifreError] = React.useState("");
 
+    const [checkOtpGlobale, setCheckOtpGlobale] = React.useState(false);
+    const [codiceOtpGlobale, setCodiceOtpGlobale] = React.useState("");
+    const [codiceOtpGlobaleError, setCodiceOtpGlobaleError] = React.useState("");
+
     const [attesaSecondoFattore, setAttesaSecondoFattore] = React.useState(false);
     const [descrizioneSecondoFattore, setDescrizioneSecondoFattore] = React.useState("");
 
     const [idLogin, setIdLogin] = React.useState("");
 
 
-    const [idInterval, setIdInterval] = React.useState<number>();
-    const [iidTimerAttesaSecondoFattoredInterval, setIdTimerAttesaSecondoFattore] = React.useState<number>();
+    const [idInterval, setIdInterval] = React.useState("");
+    const [iidTimerAttesaSecondoFattoredInterval, setIdTimerAttesaSecondoFattore] = React.useState("");
 
 
     const [listaMetodiAutenticazioneSupportati, setListaMetodiAutenticazioneSupportati] = React.useState([]);
@@ -70,7 +76,7 @@ export default function LoginPage() {
 
             console.error(interval);
 
-            await autenticazioneService.recuperaTokenDaQrCode(qrCode).then((response: any) => {
+            await autenticazioneService.recuperaTokenDaQrCode(qrCode, utenteLoggato.preToken).then(response => {
                 dispatch(fetchIsLoadingAction(true));
 
                 console.info(response.headers);
@@ -82,12 +88,36 @@ export default function LoginPage() {
                 }, 1500);
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 console.error(e);
                 dispatch(fetchIsLoadingAction(false));
             });
         }, 2000);
         setIdInterval(interval);
+    }
+
+    const generaPreToken = async () => {
+
+        await autenticazioneService.generaPreToken(codiceOtpGlobale).then(response => {
+
+            dispatch(fetchPreTokenAction(response.data.preToken));
+            toast.success("Applicazione sbloccata correttamente!", {
+                position: "top-center",
+                autoClose: 5000,
+            });
+            setCodiceOtpGlobale("");
+            setCheckOtpGlobale(false);
+        }).catch(e => {
+            console.error(e);
+            dispatch(fetchIsLoadingAction(false));
+            console.error(e.response);
+            toast.error(e.response.data.descrizione, {
+                position: "top-center",
+                autoClose: 5000,
+            });
+            dispatch(fetchPreTokenAction(""));
+        });
+
     }
 
     const generaQrCode = async () => {
@@ -96,15 +126,16 @@ export default function LoginPage() {
 
         dispatch(fetchIsLoadingAction(true));
 
-        await autenticazioneService.generaQrCode().then((response: any) => {
+        await autenticazioneService.generaQrCode(utenteLoggato.preToken).then(response => {
             console.info(response.data);
             setQrCode(response.data.idQrCode);
 
             verificaAttivazioneQrCode(response.data.idQrCode);
 
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             console.error(e);
+            dispatch(fetchPreTokenAction(""));
             dispatch(fetchIsLoadingAction(false));
         });
     }
@@ -132,13 +163,14 @@ export default function LoginPage() {
             email: email,
         }
 
-        await autenticazioneService.getMetodiAutenticazioneSupportati(jsonBody).then((response: any) => {
+        await autenticazioneService.getMetodiAutenticazioneSupportati(jsonBody, utenteLoggato.preToken).then(response => {
             console.info(response.data);
             setListaMetodiAutenticazioneSupportati(response.data);
 
             dispatch(fetchIsLoadingAction(false));
-        }).catch((e: any) => {
+        }).catch(e => {
             console.error(e.response.data);
+            dispatch(fetchPreTokenAction(""));
             dispatch(fetchIsLoadingAction(false));
         });
     }
@@ -165,7 +197,7 @@ export default function LoginPage() {
 
         }
 
-        await autenticazioneService.effettuaAutenticazione(jsonBody).then((response: any) => {
+        await autenticazioneService.effettuaAutenticazione(jsonBody, utenteLoggato.preToken).then(response => {
             console.info(response.data);
             setAttesaSecondoFattore(true);
             setDescrizioneSecondoFattore(response.data.descrizione);
@@ -178,8 +210,9 @@ export default function LoginPage() {
                 setAttesaSecondoFattore(true);
             }
 
-        }).catch((e: any) => {
+        }).catch(e => {
             console.error(e);
+            dispatch(fetchPreTokenAction(""));
             toast.error(e.response.data.descrizione, {
                 position: "top-center",
                 autoClose: 5000,
@@ -198,7 +231,7 @@ export default function LoginPage() {
 
         }
 
-        await autenticazioneService.confermaAutenticazione(jsonBody).then((response: any) => {
+        await autenticazioneService.confermaAutenticazione(jsonBody, utenteLoggato.preToken).then(response => {
             console.info(response.data);
 
             console.info(response.headers);
@@ -209,8 +242,9 @@ export default function LoginPage() {
                 navigate("/");
             }, 1500);
 
-        }).catch((e: any) => {
+        }).catch(e => {
             console.error(e);
+            dispatch(fetchPreTokenAction(""));
             dispatch(fetchIsLoadingAction(false));
             console.error(e.response);
             toast.error(e.response.data.descrizione, {
@@ -232,7 +266,7 @@ export default function LoginPage() {
 
             console.error(timerAttesaSecondoFattore);
 
-            await autenticazioneService.recuperaTokenDaLogin(idLogin).then((response: any) => {
+            await autenticazioneService.recuperaTokenDaLogin(idLogin, utenteLoggato.preToken).then(response => {
                 dispatch(fetchIsLoadingAction(true));
 
                 console.info(response.headers);
@@ -244,8 +278,10 @@ export default function LoginPage() {
                 }, 1500);
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 console.error(e);
+
+
                 dispatch(fetchIsLoadingAction(false));
             });
         }, 2000);
@@ -281,8 +317,8 @@ export default function LoginPage() {
                     </main>
                 </>
             }
+            {!utenteLoggato.preToken &&
 
-            {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length == 0 && qrCode == "" &&
                 <main className="main-content  mt-0">
                     <section>
                         <div className="page-header min-vh-80">
@@ -290,261 +326,329 @@ export default function LoginPage() {
                                 <div className="row">
                                     <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
                                         <div className="card shadow-lg card-plain">
-                                            <div className="card-header bg-transparent pb-0 text-start">
-                                                <h4 className="font-weight-bolder">Autenticazione</h4>
-                                                <p className="mb-0">Inserisci il tuo indirizzo email per proseguire</p>
-                                            </div>
-                                            <div className="card-body">
-                                                <div className="mb-3">
-                                                    <input className={emailError != "" ? "is-invalid form-control form-control-lg" : "form-control form-control-lg"} type="email" required onChange={(event) => { setEmailError(""); setEmail(event.currentTarget.value) }} value={email} placeholder="Email" aria-label="Email" />
-                                                    <div className="text-danger">
-                                                        {emailError}
-                                                    </div>
+                                            {!checkOtpGlobale && <>
+                                                <div className="card-header bg-transparent pb-0 text-start">
+                                                    <h4 className="font-weight-bolder">Avviso</h4>
+                                                    <p className="mb-0">Procedendo con l'accesso, dichiaro di essere consapevole che questa applicazione è ad uso strettamente riservato. Confermo di essere in possesso dell'autorizzazione esplicita da parte del proprietario del sistema e di operare nel rispetto delle condizioni d'uso previste. Ogni accesso non autorizzato o uso improprio sarà perseguito a norma di legge.</p>
                                                 </div>
 
-                                            </div>
+                                                <div className="card-body pt-3">
 
+                                                    <div className='row d-flex align-items-center'>
 
-                                            <div className="card-body mx-0 pt-0 ">
-
-                                                <div className='row d-flex align-items-center'>
-                                                    <div className='col-3 text-center'>
-                                                        <span onClick={generaQrCode}><i className="cursor-pointer fa-solid fa-qrcode fa-2x"></i></span>
+                                                        <div className='col-12'>
+                                                            <span onClick={() => { setCheckOtpGlobale(true) }} className="btn btn-lg btn-primary btn-lg w-100 mb-0" >Accetto</span>
+                                                        </div>
                                                     </div>
-                                                    <div className='col-9'>
-                                                        <span onClick={getMetodiAutenticazioneSupportati} className="btn btn-lg btn-primary btn-lg w-100 mb-0" >Avanti</span>
-                                                    </div>
+
                                                 </div>
-
-                                            </div>
-                                            <div className="card-footer text-center pt-0 px-lg-2 px-1">
-                                                <p className="mb-4 text-sm mx-auto">
-                                                    Hai dimenticato la password?
-                                                    <Link to="/recupero-password" className="ps-1 text-primary text-gradient font-weight-bold">Clicca qui</Link>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </main>
-            }
-
-            {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length == 0 && qrCode != "" &&
-                <main className="main-content  mt-0">
-                    <section>
-                        <div className="page-header min-vh-80">
-                            <div className="container">
-                                <div className="row">
-                                    <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
-                                        <div className="card  card-plain">
-                                            <div className="card-header bg-transparent pb-0 text-start">
-                                                <h4 className="font-weight-bolder">Autenticazione</h4>
-                                                <p className="mb-0">Inquadra il qr code con l'authenticator</p>
-                                            </div>
-                                            <div className="card-body">
-                                                <form role="form">
-                                                    <div className="mb-3">
-                                                        <QRCode className='w-100 ' fgColor='#344767' value={qrCode} />
-                                                    </div>
-
-                                                </form>
-                                            </div>
-
-
-                                            <div className="card-body mx-0 pt-0 ">
-                                                <div className='row d-flex align-items-center'>
-
-                                                    <div className='col-12'>
-                                                        <span onClick={annullaProcessoDiAutenticazione} className="btn btn-lg btn-primary btn-lg w-100 mb-0">Annulla</span>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div className="card-footer text-center pt-0 px-lg-2 px-1">
-                                                <p className="mb-4 text-sm mx-auto">
-                                                    Hai dimenticato la password?
-                                                    <Link to="/recupero-password" className="ps-1 text-primary text-gradient font-weight-bold">Clicca qui</Link>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </main>
-            }
-
-            {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length > 0 && tipoAutenticazione == "" &&
-                <>
-                    <main className="main-content  mt-0">
-                        <section>
-                            <div className="page-header min-vh-80">
-                                <div className="container">
-                                    <div className="row">
-                                        <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
-                                            <div className="card  card-plain">
-                                                <div className="card-header pb-0 text-start">
-                                                    <h4 className="font-weight-bolder">Autenticazione</h4>
-                                                    <p className="mb-0">Seleziona il metodo di autenticazione con il quale proseguire</p>
+                                            </>}
+                                            {checkOtpGlobale && <>
+                                                <div className="card-header bg-transparent pb-0 text-start">
+                                                    <h4 className="font-weight-bolder">Codice di sblocco</h4>
+                                                    <p className="mb-0">Inserisci il codice di sblocco per proseguire</p>
                                                 </div>
                                                 <div className="card-body">
-                                                    <ol className="list-group list-group-numbered">
-                                                        {
-                                                            Array.isArray(listaMetodiAutenticazioneSupportati) && listaMetodiAutenticazioneSupportati.map((metodoAutenticazione: any, index: number) =>
-
-                                                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center cursor-pointer" onClick={() => scegliMetodoAutenticazione(metodoAutenticazione.codice)}>
-                                                                    <div className="ms-2 me-auto">
-                                                                        {metodoAutenticazione.descrizione.substring(0, metodoAutenticazione.descrizione.indexOf("#"))}
-                                                                    </div>
-                                                                    <i className="fa-solid fa-chevron-right fa-2x text-primary ms-2 "></i>
-                                                                </li>
-                                                            )}
-                                                    </ol>
-                                                    <div className="text-center">
-                                                        <span onClick={annullaProcessoDiAutenticazione} className="btn btn-lg btn-primary btn-lg w-100 mt-4 mb-0">Annulla</span>
+                                                    <div className="mb-3">
+                                                        <input className={codiceOtpGlobaleError != "" ? "is-invalid form-control form-control-lg" : "form-control form-control-lg"} type="text" required onChange={(event) => { setCodiceOtpGlobaleError(""); setCodiceOtpGlobale(event.currentTarget.value) }} value={codiceOtpGlobale} placeholder="Codice di sblocco" aria-label="Codice di sblocco" />
+                                                        <div className="text-danger">
+                                                            {codiceOtpGlobaleError}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className="card-footer text-center pt-0 px-lg-2 px-1">
-                                                    <p className="mb-4 text-sm mx-auto">
-                                                        Hai dimenticato la password?
-                                                        <Link to="/recupero-password" className="ps-1 text-primary text-gradient font-weight-bold">Clicca qui</Link>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
 
+                                                </div>
+
+
+                                                <div className="card-body mx-0 pt-0 ">
+
+                                                    <div className='row d-flex align-items-center'>
+
+                                                        <div className='col-12'>
+                                                            <span onClick={generaPreToken} className="btn btn-lg btn-primary btn-lg w-100 mb-0" >Conferma</span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </>}
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </section>
-                    </main>
+                        </div>
+                    </section>
+                </main>
+
+            }
+            {utenteLoggato.preToken &&
+                <>
+
+                    {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length == 0 && qrCode == "" &&
+                        <main className="main-content  mt-0">
+                            <section>
+                                <div className="page-header min-vh-80">
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
+                                                <div className="card shadow-lg card-plain">
+                                                    <div className="card-header bg-transparent pb-0 text-start">
+                                                        <h4 className="font-weight-bolder">Autenticazione</h4>
+                                                        <p className="mb-0">Inserisci il tuo indirizzo email per proseguire</p>
+                                                    </div>
+                                                    <div className="card-body">
+                                                        <div className="mb-3">
+                                                            <input className={emailError != "" ? "is-invalid form-control form-control-lg" : "form-control form-control-lg"} type="email" required onChange={(event) => { setEmailError(""); setEmail(event.currentTarget.value) }} value={email} placeholder="Email" aria-label="Email" />
+                                                            <div className="text-danger">
+                                                                {emailError}
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <div className="card-body mx-0 pt-0 ">
+
+                                                        <div className='row d-flex align-items-center'>
+                                                            <div className='col-3 text-center'>
+                                                                <span onClick={generaQrCode}><i className="cursor-pointer fa-solid fa-qrcode fa-2x"></i></span>
+                                                            </div>
+                                                            <div className='col-9'>
+                                                                <span onClick={getMetodiAutenticazioneSupportati} className="btn btn-lg btn-primary btn-lg w-100 mb-0" >Avanti</span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div className="card-footer text-center pt-0 px-lg-2 px-1">
+                                                        <p className="mb-4 text-sm mx-auto">
+                                                            Hai dimenticato la password?
+                                                            <Link to="/recupero-password" className="ps-1 text-primary text-gradient font-weight-bold">Clicca qui</Link>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </main>
+                    }
+
+                    {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length == 0 && qrCode != "" &&
+                        <main className="main-content  mt-0">
+                            <section>
+                                <div className="page-header min-vh-80">
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
+                                                <div className="card  card-plain">
+                                                    <div className="card-header bg-transparent pb-0 text-start">
+                                                        <h4 className="font-weight-bolder">Autenticazione</h4>
+                                                        <p className="mb-0">Inquadra il qr code con l'authenticator</p>
+                                                    </div>
+                                                    <div className="card-body">
+                                                        <form role="form">
+                                                            <div className="mb-3">
+                                                                <QRCode className='w-100 ' fgColor='#344767' value={qrCode} />
+                                                            </div>
+
+                                                        </form>
+                                                    </div>
+
+
+                                                    <div className="card-body mx-0 pt-0 ">
+                                                        <div className='row d-flex align-items-center'>
+
+                                                            <div className='col-12'>
+                                                                <span onClick={annullaProcessoDiAutenticazione} className="btn btn-lg btn-primary btn-lg w-100 mb-0">Annulla</span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div className="card-footer text-center pt-0 px-lg-2 px-1">
+                                                        <p className="mb-4 text-sm mx-auto">
+                                                            Hai dimenticato la password?
+                                                            <Link to="/recupero-password" className="ps-1 text-primary text-gradient font-weight-bold">Clicca qui</Link>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </main>
+                    }
+
+                    {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length > 0 && tipoAutenticazione == "" &&
+                        <>
+                            <main className="main-content  mt-0">
+                                <section>
+                                    <div className="page-header min-vh-80">
+                                        <div className="container">
+                                            <div className="row">
+                                                <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
+                                                    <div className="card  card-plain">
+                                                        <div className="card-header pb-0 text-start">
+                                                            <h4 className="font-weight-bolder">Autenticazione</h4>
+                                                            <p className="mb-0">Seleziona il metodo di autenticazione con il quale proseguire</p>
+                                                        </div>
+                                                        <div className="card-body">
+                                                            <ol className="list-group list-group-numbered">
+                                                                {
+                                                                    Array.isArray(listaMetodiAutenticazioneSupportati) && listaMetodiAutenticazioneSupportati.map((metodoAutenticazione: any, index: number) =>
+
+                                                                        <li key={index} className="list-group-item d-flex justify-content-between align-items-center cursor-pointer" onClick={() => scegliMetodoAutenticazione(metodoAutenticazione.codice)}>
+                                                                            <div className="ms-2 me-auto">
+                                                                                {metodoAutenticazione.descrizione.substring(0, metodoAutenticazione.descrizione.indexOf("#"))}
+                                                                            </div>
+                                                                            <i className="fa-solid fa-chevron-right fa-2x text-primary ms-2 "></i>
+                                                                        </li>
+                                                                    )}
+                                                            </ol>
+                                                            <div className="text-center">
+                                                                <span onClick={annullaProcessoDiAutenticazione} className="btn btn-lg btn-primary btn-lg w-100 mt-4 mb-0">Annulla</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="card-footer text-center pt-0 px-lg-2 px-1">
+                                                            <p className="mb-4 text-sm mx-auto">
+                                                                Hai dimenticato la password?
+                                                                <Link to="/recupero-password" className="ps-1 text-primary text-gradient font-weight-bold">Clicca qui</Link>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </main>
+                        </>
+                    }
+
+                    {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length > 0 && tipoAutenticazione != "" && tipoAutenticazione.includes("PSW") && !attesaSecondoFattore &&
+                        <main className="main-content  mt-0">
+                            <section>
+                                <div className="page-header min-vh-80">
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
+                                                <div className="card shadow-lg card-plain">
+                                                    <div className="card-header bg-transparent pb-0 text-start">
+                                                        <h4 className="font-weight-bolder">Autenticazione</h4>
+                                                        <p className="mb-0">Inserisci la tua password per proseguire</p>
+                                                    </div>
+                                                    <div className="card-body">
+                                                        <div className="mb-3">
+                                                            <input className={passwordError != "" ? "is-invalid form-control form-control-lg" : "form-control form-control-lg"} type="password" required onChange={(event) => { setPasswordError(""); setPassword(event.currentTarget.value) }} value={password} placeholder="Password" aria-label="Password" />
+                                                            <div className="text-danger">
+                                                                {passwordError}
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <div className="card-body mx-0 pt-0 ">
+
+                                                        <div className='row d-flex align-items-center'>
+
+                                                            <div className='col-12'>
+                                                                <span onClick={accedi} className="btn btn-lg btn-primary btn-lg w-100 mb-0" >Accedi</span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div className="card-footer text-center pt-0 px-lg-2 px-1">
+                                                        <p className="mb-4 text-sm mx-auto">
+                                                            Hai dimenticato la password?
+                                                            <Link to="/recupero-password" className="ps-1 text-primary text-gradient font-weight-bold">Clicca qui</Link>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </main>
+                    }
+
+                    {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length > 0 && tipoAutenticazione != "" && (tipoAutenticazione.includes("SIX") || tipoAutenticazione.includes("BACKUP_CODE")) && attesaSecondoFattore &&
+                        <main className="main-content  mt-0">
+                            <section>
+                                <div className="page-header min-vh-80">
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
+                                                <div className="card shadow-lg card-plain">
+                                                    <div className="card-header bg-transparent pb-0 text-start">
+                                                        <h4 className="font-weight-bolder">Autenticazione</h4>
+                                                        <p className="mb-0">{descrizioneSecondoFattore}</p>
+                                                    </div>
+                                                    <div className="card-body">
+                                                        <div className="mb-3">
+                                                            <input className={codiceSeiCifreError != "" ? "is-invalid form-control form-control-lg" : "form-control form-control-lg"} type="text" required onChange={(event) => { setCodiceSeiCifreError(""); setCodiceSeiCifre(event.currentTarget.value) }} value={codiceSeiCifre} placeholder="Codice di conferma" aria-label="Codice di conferma" />
+                                                            <div className="text-danger">
+                                                                {codiceSeiCifreError}
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <div className="card-body mx-0 pt-0 ">
+
+                                                        <div className='row d-flex align-items-center'>
+
+                                                            <div className='col-12'>
+                                                                <span onClick={confermaAutenticazione} className="btn btn-lg btn-primary btn-lg w-100 mb-0" >Conferma</span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </main>
+                    }
+
+                    {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length > 0 && tipoAutenticazione != "" && tipoAutenticazione.includes("SI_NO") && attesaSecondoFattore &&
+                        <main className="main-content  mt-0">
+                            <section>
+                                <div className="page-header min-vh-80">
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
+                                                <div className="card shadow-lg card-plain">
+                                                    <div className="card-header bg-transparent pb-0 text-start">
+                                                        <h4 className="font-weight-bolder">Autenticazione</h4>
+                                                        <p className="mb-0">{descrizioneSecondoFattore}</p>
+                                                    </div>
+                                                    <div className="card-body">
+                                                        <div className="mb-3 text-center">
+                                                            <i className="fa-solid fa-mobile-screen-button fa-5x text-primary fa-beat-fade"></i>
+                                                        </div>
+
+                                                    </div>
+
+
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </main>
+                    }
+
                 </>
-            }
-
-            {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length > 0 && tipoAutenticazione != "" && tipoAutenticazione.includes("PSW") && !attesaSecondoFattore &&
-                <main className="main-content  mt-0">
-                    <section>
-                        <div className="page-header min-vh-80">
-                            <div className="container">
-                                <div className="row">
-                                    <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
-                                        <div className="card shadow-lg card-plain">
-                                            <div className="card-header bg-transparent pb-0 text-start">
-                                                <h4 className="font-weight-bolder">Autenticazione</h4>
-                                                <p className="mb-0">Inserisci la tua password per proseguire</p>
-                                            </div>
-                                            <div className="card-body">
-                                                <div className="mb-3">
-                                                    <input className={passwordError != "" ? "is-invalid form-control form-control-lg" : "form-control form-control-lg"} type="password" required onChange={(event) => { setPasswordError(""); setPassword(event.currentTarget.value) }} value={password} placeholder="Password" aria-label="Password" />
-                                                    <div className="text-danger">
-                                                        {passwordError}
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-
-                                            <div className="card-body mx-0 pt-0 ">
-
-                                                <div className='row d-flex align-items-center'>
-
-                                                    <div className='col-12'>
-                                                        <span onClick={accedi} className="btn btn-lg btn-primary btn-lg w-100 mb-0" >Accedi</span>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div className="card-footer text-center pt-0 px-lg-2 px-1">
-                                                <p className="mb-4 text-sm mx-auto">
-                                                    Hai dimenticato la password?
-                                                    <Link to="/recupero-password" className="ps-1 text-primary text-gradient font-weight-bold">Clicca qui</Link>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </main>
-            }
-
-            {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length > 0 && tipoAutenticazione != "" && (tipoAutenticazione.includes("SIX") || tipoAutenticazione.includes("BACKUP_CODE")) && attesaSecondoFattore &&
-                <main className="main-content  mt-0">
-                    <section>
-                        <div className="page-header min-vh-80">
-                            <div className="container">
-                                <div className="row">
-                                    <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
-                                        <div className="card shadow-lg card-plain">
-                                            <div className="card-header bg-transparent pb-0 text-start">
-                                                <h4 className="font-weight-bolder">Autenticazione</h4>
-                                                <p className="mb-0">{descrizioneSecondoFattore}</p>
-                                            </div>
-                                            <div className="card-body">
-                                                <div className="mb-3">
-                                                    <input className={codiceSeiCifreError != "" ? "is-invalid form-control form-control-lg" : "form-control form-control-lg"} type="text" required onChange={(event) => { setCodiceSeiCifreError(""); setCodiceSeiCifre(event.currentTarget.value) }} value={codiceSeiCifre} placeholder="Codice di conferma" aria-label="Codice di conferma" />
-                                                    <div className="text-danger">
-                                                        {codiceSeiCifreError}
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-
-                                            <div className="card-body mx-0 pt-0 ">
-
-                                                <div className='row d-flex align-items-center'>
-
-                                                    <div className='col-12'>
-                                                        <span onClick={confermaAutenticazione} className="btn btn-lg btn-primary btn-lg w-100 mb-0" >Conferma</span>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </main>
-            }
-
-            {!feedback.isLoading && listaMetodiAutenticazioneSupportati.length > 0 && tipoAutenticazione != "" && tipoAutenticazione.includes("SI_NO") && attesaSecondoFattore &&
-                <main className="main-content  mt-0">
-                    <section>
-                        <div className="page-header min-vh-80">
-                            <div className="container">
-                                <div className="row">
-                                    <div className="shadow-lg bg-white rounded col-xl-4 col-lg-4 col-md-8 d-flex flex-column mx-0 mx-auto">
-                                        <div className="card shadow-lg card-plain">
-                                            <div className="card-header bg-transparent pb-0 text-start">
-                                                <h4 className="font-weight-bolder">Autenticazione</h4>
-                                                <p className="mb-0">{descrizioneSecondoFattore}</p>
-                                            </div>
-                                            <div className="card-body">
-                                                <div className="mb-3 text-center">
-                                                    <i className="fa-solid fa-mobile-screen-button fa-5x text-primary fa-beat-fade"></i>
-                                                </div>
-
-                                            </div>
-
-
-
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </main>
             }
         </>
     );

@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import Layout from '../components/Layout';
 import { getData, getOra } from '../DateUtil';
 import logService from '../services/LogService';
+import { toast } from 'react-toastify';
 
 
 export default function LogsPage() {
 
     const utenteLoggato = useSelector((state: any) => state.utenteLoggato);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const params = useParams();
 
@@ -25,7 +26,7 @@ export default function LogsPage() {
     const [notificheTelegram, setNotificheTelegram] = React.useState([]);
 
     let interval: any;
-    const [idInterval, setIdInterval] = React.useState<number>();
+    const [idInterval, setIdInterval] = React.useState("");
 
 
 
@@ -52,7 +53,7 @@ export default function LogsPage() {
 
         if (pagina !== 0) {
 
-            await logService.getLogs(utenteLoggato.token, pagina, params.livelloLog).then((response: any) => {
+            await logService.getLogs(utenteLoggato.token, pagina, params.livelloLog).then(response => {
                 console.info(response.data);
 
 
@@ -67,7 +68,7 @@ export default function LogsPage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -93,7 +94,7 @@ export default function LogsPage() {
 
         if (pagina !== 0) {
 
-            await logService.getLogsTelegram(utenteLoggato.token, pagina).then((response: any) => {
+            await logService.getLogsTelegram(utenteLoggato.token, pagina).then(response => {
                 console.info(response.data);
 
 
@@ -108,7 +109,7 @@ export default function LogsPage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -134,7 +135,7 @@ export default function LogsPage() {
 
         if (pagina !== 0) {
 
-            await logService.getNotificheTelegram(utenteLoggato.token, pagina).then((response: any) => {
+            await logService.getNotificheTelegram(utenteLoggato.token, pagina).then(response => {
                 console.info(response.data);
 
 
@@ -149,7 +150,7 @@ export default function LogsPage() {
                 }
 
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -184,7 +185,7 @@ export default function LogsPage() {
             <div className='row'>
                 <div className='col-12'>
 
-                    <div className="card shadow-lg mx-4 mt-3">
+                    <div className="card shadow-lg mx-1 mt-3">
                         <div className="card-header pb-0">
                             <div className="d-flex align-items-center">
                                 <h3 className="mb-1">
@@ -265,7 +266,7 @@ export default function LogsPage() {
                         </div>
                     </div>
 
-                    <div className="card shadow-lg mx-4 mt-3">
+                    <div className="card shadow-lg mx-1 mt-3">
                         <div className="card-header pb-0">
                             <div className="d-flex align-items-center">
                                 <h3 className="mb-1">
@@ -322,7 +323,7 @@ export default function LogsPage() {
                         </div>
                     </div>
 
-                    <div className="card shadow-lg mx-4 mt-3">
+                    <div className="card shadow-lg mx-1 mt-3">
                         <div className="card-header pb-0">
                             <div className="d-flex align-items-center">
                                 <h3 className="mb-1">

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
@@ -20,7 +20,7 @@ export default function ListaUtentiPage() {
 
         if (pagina !== 0) {
 
-            await utentiService.getListaUtenti(utenteLoggato.token, pagina).then((response: any) => {
+            await utentiService.getListaUtenti(utenteLoggato.token, pagina).then(response => {
                 if (response.data.length !== 0) {
                     setUtenti(response.data);
                     setPaginaUtente(pagina);
@@ -31,7 +31,7 @@ export default function ListaUtentiPage() {
                     });
                 }
 
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -54,14 +54,14 @@ export default function ListaUtentiPage() {
     }
 
     const eliminaUtente = async () => {
-        await utentiService.eliminaUtente(utenteLoggato.token, utenteDaEliminare.idUtente).then(() => {
+        await utentiService.eliminaUtente(utenteLoggato.token, utenteDaEliminare.idUtente).then(response => {
             toast.success("Utente eliminato con successo!", {
                 position: "top-center",
                 autoClose: 5000,
             });
             setUtenteDaEliminare(undefined);
             getUtenti(paginaUtente);
-        }).catch((e: any) => {
+        }).catch(e => {
             //---------------------------------------------
             try {
                 console.error(e);
@@ -84,12 +84,12 @@ export default function ListaUtentiPage() {
 
     const cambiaAbilitazioneUtente = async (idUtente: any, dataBlocco: any) => {
         if (dataBlocco === null) {
-            await utentiService.bloccaUtente(utenteLoggato.token, null, idUtente).then(() => {
+            await utentiService.bloccaUtente(utenteLoggato.token, null, idUtente).then(response => {
                 toast.success("Utente bloccato con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 }); getUtenti(paginaUtente);
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -109,13 +109,13 @@ export default function ListaUtentiPage() {
                 //---------------------------------------------
             });
         } else {
-            await utentiService.sbloccaUtente(utenteLoggato.token, null, idUtente).then(() => {
+            await utentiService.sbloccaUtente(utenteLoggato.token, null, idUtente).then(response => {
                 getUtenti(paginaUtente);
                 toast.success("Utente sbloccato con successo", {
                     position: "top-center",
                     autoClose: 5000,
                 });
-            }).catch((e: any) => {
+            }).catch(e => {
                 //---------------------------------------------
                 try {
                     console.error(e);
@@ -147,14 +147,14 @@ export default function ListaUtentiPage() {
     return (
         <Layout>
 
-            <div className="card shadow-lg mx-4 mt-3">
+            <div className="card shadow-lg mx-1 mt-3">
                 <div className="card-header pb-0">
                     <div className="d-flex align-items-center justify-content-between">
                         <h3 className="">
                             <i className="fa-solid fa-users text-primary fa-1x pe-2 "></i>
                             Lista utenti
                         </h3>
-                        <Link to="/scheda-utente" className='btn btn-primary'><i className="fa-solid fa-user-plus pe-2"></i>Inserisci utente</Link>
+                        <Link to="/pannello-di-controllo/scheda-utente" className='btn btn-primary'><i className="fa-solid fa-user-plus pe-2"></i>Inserisci utente</Link>
 
                     </div>
                 </div>
@@ -185,9 +185,9 @@ export default function ListaUtentiPage() {
                                                     <td>{utente.cognome}</td>
                                                     <td>{utente.email}</td>
                                                     <td className='text-center'><div className="form-check form-switch">
-                                                        <input className="form-check-input" type="checkbox" checked={utente.dataBlocco !== null} onClick={() => { cambiaAbilitazioneUtente(utente.idUtente, utente.dataBlocco) }} />
+                                                        <input className="form-check-input" type="checkbox" checked={utente.dataBlocco !== null} onClick={(e) => { cambiaAbilitazioneUtente(utente.idUtente, utente.dataBlocco) }} />
                                                     </div></td>
-                                                    <td className='text-center'><Link to={"/scheda-utente/" + utente.idUtente} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
+                                                    <td className='text-center'><Link to={"/pannello-di-controllo/scheda-utente/" + utente.idUtente} className='btn btn-primary'><i className="fa-solid fa-pen-to-square"></i></Link></td>
                                                     <td className='text-center'><span onClick={() => setUtenteDaEliminare(utente)} data-bs-toggle="modal" data-bs-target="#eliminaRisorsa" className='btn btn-danger'><i className="fa-solid fa-trash-can"></i></span></td>
                                                 </tr>
                                             )}
