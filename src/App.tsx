@@ -23,8 +23,30 @@ import SchedaRuoloPage from './pages/ruoli/SchedaRuoloPage'
 import ListaUtentiPage from './pages/utenti/ListaUtentiPage'
 import SchedaUtentePage from './pages/utenti/SchedaUtentePage'
 import PannelloDiControlloPage from './pages/PannelloDiControlloPage'
+import { useEffect } from 'react'
+import OneSignal from 'react-onesignal'
+import { useSelector } from 'react-redux'
+import configurazione from './configurazione'
 
 function App() {
+
+
+  const utenteLoggato = useSelector((state: any) => state.utenteLoggato);
+
+
+  useEffect(() => {
+
+    if (utenteLoggato.token) {
+      OneSignal.init({
+        appId: configurazione.oneSignal.appId,
+        allowLocalhostAsSecureOrigin: true,
+        serviceWorkerParam: {
+          scope: configurazione.oneSignal.scope
+        },
+      });
+    }
+
+  }, [utenteLoggato.token]);
 
   return (
     <BrowserRouter basename='/vite-otter-guardian'>

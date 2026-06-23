@@ -205,7 +205,7 @@ export default function Header() {
                         <ul className="navbar-nav  justify-content-end">
 
                             <li className="nav-item d-xl-none ps-3 d-flex align-items-center">
-                                <a href="javascript:;" className="nav-link text-dark p-0" id="iconNavbarSidenav" onClick={toggleSidenav}>
+                                <a href="#" className="nav-link text-dark p-0" id="iconNavbarSidenav" onClick={toggleSidenav}>
                                     <div className="sidenav-toggler-inner">
                                         <i className="sidenav-toggler-line bg-white"></i>
                                         <i className="sidenav-toggler-line bg-white"></i>
@@ -215,12 +215,12 @@ export default function Header() {
                             </li>
 
                             <li className="nav-item dropdown pe-3 ps-3 d-flex align-items-center">
-                                <a onClick={leggiNotificheLatoUtente} href="javascript:;" className="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a onClick={leggiNotificheLatoUtente} href="#" className="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i className={("fa fa-bell cursor-pointer ") + (notificheNonLette.length > 0 ? "fa-beat-fade" : "")}></i>
                                 </a>
                                 <ul className="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
                                     <li className="">
-                                        <a className="dropdown-item border-radius-md" href="javascript:;">
+                                        <a className="dropdown-item border-radius-md" href="#">
                                             {
                                                 Array.isArray(notifiche) && notifiche.slice(0, 3).map((notifica: any, index: number) =>
                                                     <><div key={index} className="d-flex py-1">
@@ -254,7 +254,7 @@ export default function Header() {
                                 </ul>
                             </li>
                             <li className="nav-item dropdown pe-2 d-flex align-items-center">
-                                <a href="javascript:;" className="nav-link text-white p-0" id="dropdownUtente" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a href="#" className="nav-link text-white p-0" id="dropdownUtente" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i className="fa fa-user cursor-pointer pe-1"></i>
                                     <span className="d-sm-inline d-none font-weight-bold">{utenteLoggato.nome} {utenteLoggato.cognome}</span>
                                 </a>

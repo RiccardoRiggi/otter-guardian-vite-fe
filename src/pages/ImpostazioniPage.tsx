@@ -10,6 +10,8 @@ import dispositiviFisiciService from '../services/DispositiviFisiciService';
 import utenteLoggatoService from '../services/UtenteLoggatoService';
 import { toast } from 'react-toastify';
 
+import OneSignal from 'react-onesignal';
+
 export default function ImpostazioniPage() {
 
     const utenteLoggato = useSelector((state: any) => state.utenteLoggato);
@@ -34,8 +36,8 @@ export default function ImpostazioniPage() {
 
 
 
-    const [idInterval, setIdInterval] = React.useState("");
-    const [idIntervalTelegram, setIdIntervalTelegram] = React.useState("");
+    const [idInterval, setIdInterval] = React.useState<any>("");
+    const [idIntervalTelegram, setIdIntervalTelegram] = React.useState<any>("");
 
 
     const [accessi, setAccessi] = React.useState([]);
@@ -548,18 +550,103 @@ export default function ImpostazioniPage() {
         }
     }, []);
 
+    const aggiornaSottoscrizione = async (idSottoscrizione: any) => {
+        let jsonBody = {
+            idSottoscrizione: idSottoscrizione
+        }
+        await utenteLoggatoService.aggiornaSottoscrizione(utenteLoggato.token, jsonBody).then(response => {
+            dispatch(fetchIsLoadingAction(false));
+            toast.success("Sottoscrizione aggiornata con successo!", {
+                position: "top-center",
+                autoClose: 5000,
+            });
+        }).catch(e => {
+            dispatch(fetchIsLoadingAction(false));
+            //---------------------------------------------
+            try {
+                console.error(e);
+                toast.error(e.response.data.descrizione, {
+                    position: "top-center",
+                    autoClose: 5000,
+                });
+            } catch (e: any) {
+                toast.error("Errore imprevisto", {
+                    position: "top-center",
+                    autoClose: 5000,
+                });
+            }
+            if (e.response.status === 401) {
+                navigate("/logout");
+            }
+            //---------------------------------------------
+        });
+    }
+
+    const handleNotificationClick = async () => {
+        console.log("Pulsante cliccato!");
+
+        // Verifica se l'SDK è caricato
+        if (!OneSignal) {
+            toast.error("OneSignal non è inizializzato o non è presente nella pagina.", {
+                position: "top-center",
+                autoClose: 5000,
+            });
+            return;
+        }
+
+        console.log("Stato OneSignal:", OneSignal);
+
+        try {
+            // Gestione sicura dei permessi (evita crash se undefined)
+            const permission: any = OneSignal.Notifications?.permission;
+            console.log("Permesso attuale:", permission);
+
+            // Controlliamo se esiste l'utente e la sottoscrizione
+            const subscriptionId = OneSignal.User?.PushSubscription?.id;
+            console.log("Subscription ID attuale:", subscriptionId);
+
+            // CASO 1: Nessun permesso (Default)
+            if (!permission || permission === 'default') {
+                console.log("Richiedo autorizzazione...");
+                await OneSignal.Notifications.requestPermission();
+
+                // Aspettiamo un secondo per dare tempo al browser di aggiornarsi
+                aggiornaSottoscrizione(OneSignal.User?.PushSubscription?.id);
+
+            } else {
+                // CASO 2: Già autorizzato, facciamo reset
+                console.log("Reset sottoscrizione...");
+
+                await OneSignal.User.PushSubscription.optOut();
+                console.log("Opt-out completato");
+
+                await OneSignal.User.PushSubscription.optIn();
+                console.log("Opt-in completato");
+
+                aggiornaSottoscrizione(OneSignal.User?.PushSubscription?.id);
+            }
+
+        } catch (error) {
+            console.error("Errore bloccante dentro la funzione:", error);
+            toast.error("Errore durante la creazione o l'aggiornamento della sottoscrizione", {
+                position: "top-center",
+                autoClose: 5000,
+            });
+        }
+    };
+
 
     return (
         <Layout>
             <div className="card shadow-lg mx-1 ">
                 <div className="card-body p-3">
                     <div className="row gx-4">
-                        <div className="col-auto">
+                        <div className="col-3">
                             <div className="avatar avatar-xl position-relative">
                                 <i className="fa-solid fa-user-astronaut text-primary fa-3x"></i>
                             </div>
                         </div>
-                        <div className="col-auto my-auto">
+                        <div className="col-6 my-auto text-center">
                             <div className="h-100">
                                 <h5 className="mb-1">
                                     {utenteLoggato.nome} {utenteLoggato.cognome}
@@ -569,8 +656,10 @@ export default function ImpostazioniPage() {
                                 </p>
                             </div>
                         </div>
-                        <div className="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
-
+                        <div className="col-3 my-auto text-end">
+                            <div onClick={handleNotificationClick} className="avatar avatar-xl position-relative">
+                                <i className="fa-solid fa-bell text-primary fa-3x fa-shake"></i>
+                            </div>
                         </div>
                     </div>
                 </div>

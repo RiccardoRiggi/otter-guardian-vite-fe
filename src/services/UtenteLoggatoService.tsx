@@ -120,6 +120,15 @@ const disabilitaTipoRecuperoPassword = (token: any, idTipoMetodoRecPsw: any) => 
     return http.put(root, null, config);
 }
 
+const aggiornaSottoscrizione = (token: any, jsonBody: any) => {
+    const params = new URLSearchParams([["nomeMetodo", "aggiornaSottoscrizione"]]);
+    const headers = {
+        token: token,
+    }
+
+    return http.post(root, jsonBody, { params, headers });
+}
+
 const utenteLoggatoService = {
     getUtenteLoggato,
     invalidaToken,
@@ -132,6 +141,7 @@ const utenteLoggatoService = {
     getMetodiRecuperoPasswordPerUtenteLoggato,
     abilitaTipoRecuperoPassword,
     disabilitaTipoRecuperoPassword,
-    getChiaveGlobale
+    getChiaveGlobale,
+    aggiornaSottoscrizione
 };
 export default utenteLoggatoService;
